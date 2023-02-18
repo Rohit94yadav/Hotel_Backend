@@ -1,5 +1,5 @@
 const express = require("express");
-
+const cors = require("cors")
 const { connection } = require("./configs/db");
 
 const { wenderRouter } = require("./Routes/Wender.routes");
@@ -20,9 +20,9 @@ require("dotenv").config();
 
 const app = express();
 
-// app.use(cors({
-//   origin:"*"
-// }));
+app.use(cors({
+  origin:"*"
+}));
 
 app.use(express.json());
 
