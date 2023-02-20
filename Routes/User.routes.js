@@ -99,7 +99,7 @@ UserRouter.get("/",  async (req, res) => {
   const payload = req.body;
 
   try {
-    const product = await UserModel.find({ _id: payload.userId });
+    const product = await UserModel.find();
     res.send({ data: product });
   } catch (error) {
     console.log("error", error);
