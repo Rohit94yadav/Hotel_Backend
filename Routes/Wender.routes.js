@@ -103,5 +103,30 @@ wenderRouter.get("/", async (req, res) => {
   }
 });
 
+wenderRouter.patch("/update/:id", async (req, res) => {
+  const Id = req.params.id;
+  const payload=req.body 
+ try {
+      await WenderModel.findByIdAndUpdate({ _id: Id }, payload);
+      res.send({ msg: "updated Sucessfully" });
+   
+  } catch (err) {
+    console.log(err);
+    res.send({ err: "Something went wrong" });
+  }
+});
+
+hotelRoutes.delete("/delete/:id", async (req, res) => {
+  const Id = req.params.id;
+  try {
+      await HotelModel.findByIdAndDelete({ _id: Id });
+      res.send("Deleted the Hotel Data");
+
+  } catch (err) {
+    console.log(err);
+    res.send({ msg: "Something went wrong" });
+  }
+});
+
 
 module.exports = { wenderRouter };
