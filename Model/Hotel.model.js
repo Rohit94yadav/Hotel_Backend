@@ -2,10 +2,10 @@ const { mongoose } = require("mongoose");
 
 const hotelSchema = mongoose.Schema(
   {
-    hotelName: { type: String, required: true, unique: true },
+    name: { type: String, required: true, unique: true },
     image_url: [{ type: String, required: true }],
     email: { type: String, required: true },
-    phoneNumber: { type: Number, required: true },
+    phone: { type: Number, required: true },
     address: { type: String, required: true },
     city: { type: String, required: true },
     pinCode: { type: Number, required: true },
@@ -14,11 +14,11 @@ const hotelSchema = mongoose.Schema(
     ownerName: { type: String,required: true  },
     contactName: { type: String },
     isApprovedByAdmin:{type:String, default:"false"},
-    allRooms:[
+    alltypes:[
       {
-        roomType:{ type: String, required: true},
-        numberofRooms:{ type: Number, required: true},
-        priceperNight:{ type: Number, required: true},
+        type:{ type: String, required: true},
+        numberofitem:{ type: Number, required: true},
+        price:{ type: Number, required: true},
       }
     ],
     userId: {
