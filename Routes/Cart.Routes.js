@@ -13,7 +13,7 @@ cartRouter.get("/", authenticate, async (req, res) => {
 
   try {
     const product = await CartModel.find({ userId: payload.userId });
-    // console.log(product);
+   // console.log(product);
     res.send({ data: product });
   } catch (error) {
     console.log("error", error);
@@ -25,32 +25,29 @@ cartRouter.get("/", authenticate, async (req, res) => {
 });
 
 cartRouter.post("/add", authenticate, async (req, res) => {
-  
-  const data = req.body;
+  const userId = req.body.userId;
   try {
-    const userdata = await UserModel.findOne({ _id: data.userId });
-    const hotelData = await HotelModel.findOne({ hotelName: data.hotelName });
-    // console.log(hotelData);
-     const cart = await CartModel.create({
-      hotelName: req.body.hotelName,
+    const userid = await CartModel.find({ userId:userId });
+    console.log(userid)
+   
+    const cart = await CartModel.create({
+      name: req.body.name,
+      image: req.body.image,
+      price: req.body.price,
+      quantity: req.body.quantity,
+      type: req.body.type,
+      bookingDate: req.body.bookingDate,
+      checkoutDate: req.body.checkoutDate,
+      numberofPerson: req.body.numberofPerson,
       userId: userId,
-      userName: userdata.name,
-      userNumber: userdata.phone,
-      userEmail: userdata.email,
-      roomType: data.roomType,
-      bookingDate:data.bookingDate,
-      checkOutDate:data.bookingDate,
-      numberofRooms:data.numberofRooms,
-      numberofPerson:data.numberofPerson,
-      hotelId:hotelData._id,
+      productId:req.body.productId,
+      finalPrice:req.body.quantity*req.body.price
     });
-    // console.log(cart);
     return res.status(201).send(cart);
   } catch (e) {
     res.status(500).send(e.message);
   }
 });
-
 
 
 cartRouter.patch("/update/:id",authenticate, async (req, res) => {

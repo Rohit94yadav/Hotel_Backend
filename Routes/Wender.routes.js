@@ -107,6 +107,20 @@ wenderRouter.get("/", async (req, res) => {
     });
   }
 });
+wenderRouter.get("/:id", async (req, res) => {
+  const Id = req.params.id;
+
+  try {
+    const product = await WenderModel.find({ _id: Id });
+    res.send({ data: product });
+  } catch (error) {
+    console.log("error", error);
+    res.status(500).send({
+      error: true,
+      msg: "something went wrong",
+    });
+  }
+});
 
 wenderRouter.patch("/update/:id", async (req, res) => {
   const Id = req.params.id;

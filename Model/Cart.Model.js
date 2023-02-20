@@ -1,28 +1,25 @@
 const mongoose = require("mongoose");
 
 const cartSchema = new mongoose.Schema(
-  {
-    hotelCart: [{
-      hotelId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "hotel",
-        required: true,
-      },
-      hotelName: { type: String, required: true },
-      userName:{ type: String, required: true },
-      userNumber:{ type: Number, required: true },
-      userEmail:{ type: String, required: true },
-      roomType:{ type: String, required: true },
-      bookingDate:{ type: Number, required: true },
-      numberofRooms:{type: Number, required: true },
-      numberofPerson:{ type: Number, required: true },
-    }],
-    packageCart: [{},],
+  { 
+    name: { type: String, required: true },
+    image: { type: String, required: true },
+    price: { type: Number, required: true },
+    quantity: { type: Number, default: 1, min: 1 },
+    type:{ type: String, required: true },
+    bookingDate:{ type: Number, required: true },
+    checkoutDate:{ type: Number, required: true },
+    numberofPerson:{ type: Number, required: true },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "user",
       required: true,
     },
+    productId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "product",
+      required: true,
+    }
   },
   {
     versionKey: false,
