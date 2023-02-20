@@ -105,7 +105,8 @@ wenderRouter.get("/", async (req, res) => {
 
 wenderRouter.patch("/update/:id", async (req, res) => {
   const Id = req.params.id;
-  const payload=req.body 
+  const payload=req.body
+ 
  try {
       await WenderModel.findByIdAndUpdate({ _id: Id }, payload);
       res.send({ msg: "updated Sucessfully" });

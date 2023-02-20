@@ -25,10 +25,10 @@ cartRouter.get("/", authenticate, async (req, res) => {
 });
 
 cartRouter.post("/add", authenticate, async (req, res) => {
-  const userId = req.body.userId;
+  
   const data = req.body;
   try {
-    const userdata = await UserModel.findOne({ _id: userId });
+    const userdata = await UserModel.findOne({ _id: data.userId });
     const hotelData = await HotelModel.findOne({ hotelName: data.hotelName });
     // console.log(hotelData);
      const cart = await CartModel.create({
