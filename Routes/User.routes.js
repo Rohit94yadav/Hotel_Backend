@@ -95,7 +95,7 @@ UserRouter.post("/login", async (req, res) => {
   }
 });
 
-UserRouter.get("/", authenticate, async (req, res) => {
+UserRouter.get("/",  async (req, res) => {
   const payload = req.body;
 
   try {
