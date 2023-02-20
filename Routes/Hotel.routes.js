@@ -43,7 +43,6 @@ hotelRoutes.post("/add", async (req, res) => {
     console.log(error);
   }
 });
-
 hotelRoutes.patch("/update/:id", async (req, res) => {
   const Id = req.params.id;
   const payload = req.body;
