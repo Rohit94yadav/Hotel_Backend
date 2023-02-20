@@ -92,7 +92,7 @@ wenderRouter.post("/login", async (req, res) => {
 
 wenderRouter.get("/", async (req, res) => {
   try {
-    const product = await UserModel.find();
+    const product = await WenderModel.find();
     res.send({ data: product });
   } catch (error) {
     console.log("error", error);
