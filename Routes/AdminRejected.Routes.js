@@ -1,9 +1,9 @@
 const express = require("express");
 const { HotelModel } = require("../Model/Hotel.model");
 
-const AllhotelRoutes = express.Router();
+const AdminApprovelRejectedRouter = express.Router();
 
-AllhotelRoutes.get("/", async (req, res) => {
+AdminApprovelRejectedRouter.get("/", async (req, res) => {
   const sort = req.query.sort;
   const filter = req.query.filter||"";
   const city = req.query.city||"";
@@ -24,14 +24,14 @@ AllhotelRoutes.get("/", async (req, res) => {
   }else {
     sortBy = { _id: 1 };
   }
-const data=await HotelModel.find({isApprovedByAdmin:"true"})
+const data=await HotelModel.find({isApprovedByAdmin:"reject"})
 console.log(data.isApprovedByAdmin)
 
 if(data.length>0){
 
   try {
     if (filter.length>0) {
-        const products = await HotelModel.find({isApprovedByAdmin:"true"})
+        const products = await HotelModel.find({isApprovedByAdmin:"reject"})
           .where("rating")
           .gte(rating)
           .sort(sortBy)
@@ -39,7 +39,7 @@ if(data.length>0){
           .in(filter)
           .where("city")
           .in(city)
-        const count = await HotelModel.find({isApprovedByAdmin:"true"})
+        const count = await HotelModel.find({isApprovedByAdmin:"reject"})
           .where("rating")
           .gte(rating)
           .sort(sortBy)
@@ -55,13 +55,13 @@ if(data.length>0){
         res.send({ data: products, total: count });
        
       } else {
-        const count = await HotelModel.find({isApprovedByAdmin:"true"})
+        const count = await HotelModel.find({isApprovedByAdmin:"reject"})
           .where("rating")
           .gte(rating)
           .sort(sortBy)
           
           .count();
-        const products = await HotelModel.find({isApprovedByAdmin:"true"})
+        const products = await HotelModel.find({isApprovedByAdmin:"reject"})
           .where("rating")
           .gte(rating)
           .sort(sortBy)
@@ -77,8 +77,7 @@ if(data.length>0){
 
 });
 
-
-AllhotelRoutes.get("/:id", async (req, res) => {
+AdminApprovelRejectedRouter.get("/:id", async (req, res) => {
   const id = req.params.id;
   try {
     const product = await HotelModel.findById(id);
@@ -88,9 +87,18 @@ AllhotelRoutes.get("/:id", async (req, res) => {
   }
 });
 
+AdminApprovelRejectedRouter.delete("/delete/:id", async (req, res) => {
+    const Id = req.params.id;
+    const note = await HotelModel.findOne({ _id: Id });
 
+    try {
+        await HotelModel.findByIdAndDelete({ _id: Id });
+        res.send("Deleted the Hotel Data");
+      
+    } catch (err) {
+      console.log(err);
+      res.send({ msg: "Something went wrong" });
+    }
+  });
 
-
-
-
-module.exports = { AllhotelRoutes };
+module.exports = { AdminApprovelRejectedRouter };

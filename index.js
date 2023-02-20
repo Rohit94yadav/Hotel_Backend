@@ -1,5 +1,5 @@
 const express = require("express");
-const cors = require("cors")
+
 const { connection } = require("./configs/db");
 
 const { wenderRouter } = require("./Routes/Wender.routes");
@@ -10,19 +10,19 @@ const { AllhotelRoutes } = require("./Routes/AllHotel.Routes");
 const { cartRouter } = require("./Routes/Cart.Routes");
 const { tourPlaceRoutes } = require("./Routes/TouristPlace.Routes");
 const { TourTravelRoutes } = require("./Routes/TourTravel.Routes");
-
-
-
-
+const { packageRoutes } = require("./Routes/Package.Routes");
+const { AdminRegisterRoutes } = require("./Routes/AdminRegister.Routes");
+const { AdminApprovedHotelRouter, AdminApprovedRoutes } = require("./Routes/AdminAprovedHotel.Routes");
+const { AdminApprovelRejectedRouter } = require("./Routes/AdminRejected.Routes");
 
 
 require("dotenv").config();
 
 const app = express();
 
-app.use(cors({
-  origin:"*"
-}));
+// app.use(cors({
+//   origin:"*"
+// }));
 
 app.use(express.json());
 
@@ -31,19 +31,30 @@ app.get("/", (req, res) => {
 });
 
 
+
+
 app.use("/vendor", wenderRouter);
 
 app.use("/user",UserRouter)
 
 app.use("/allhotel",AllhotelRoutes)
 
+
 app.use("/hotel",hotelRoutes);
+
+app.use("/nonaproved",AdminApprovedRoutes)
+
+app.use("/rejectaproved",AdminApprovelRejectedRouter)
 
 app.use("/cart",cartRouter)
 
 app.use("/touristplace",tourPlaceRoutes)
 
 app.use("/tourtravel",TourTravelRoutes)
+
+app.use("/package",packageRoutes)
+
+app.use("/admin",AdminRegisterRoutes)
 
 
 app.listen(process.env.port, async () => {

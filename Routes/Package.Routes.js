@@ -1,15 +1,16 @@
 const express = require("express");
-const hotelRoutes = express.Router();
+const packageRoutes = express.Router();
 
 const { authenticate } = require("../middleware/authentication.middleware");
-const { HotelModel } = require("../Model/Hotel.model");
+const { PackageModel } = require("../Model/Package.Model");
 
-hotelRoutes.use(authenticate);
 
-hotelRoutes.get("/", async (req, res) => {
+packageRoutes.use(authenticate);
+
+packageRoutes.get("/", async (req, res) => {
   const payload = req.body;
   try {
-    const product = await HotelModel.find({ userId: payload.userId });
+    const product = await PackageModel.find({ userId: payload.userId });
     console.log(product);
     res.send({ data: product });
   } catch (error) {
@@ -21,22 +22,37 @@ hotelRoutes.get("/", async (req, res) => {
   }
 });
 
-hotelRoutes.post("/add", async (req, res) => {
+packageRoutes.get("/allpackage", async (req, res) => {
+    const payload = req.body;
+    try {
+      const product = await PackageModel.find();
+      console.log(product);
+      res.send({ data: product });
+    } catch (error) {
+      console.log("error", error);
+      res.status(500).send({
+        error: true,
+        msg: "something went wrong",
+      });
+    }
+  });
+
+packageRoutes.post("/add", async (req, res) => {
   const payload = req.body;
 
   try {
-    const title = await HotelModel.findOne({ hotelName: payload.hotelName });
+    const title = await PackageModel.findOne({ placeName: payload.placeName });
     if (title) {
       res
         .status(200)
         .send({
-          msg: "This Hotel is allready Present So please change the Name of Hotel",
+          msg: "This Place is allready Present So please change the Name of Place",
           error: true,
         });
     } else {
-      const hotel = new HotelModel(payload);
+      const hotel = new PackageModel(payload);
       await hotel.save();
-      res.send({ msg: "Hotel Data is created" });
+      res.send({ msg: "Tourist Data is created" });
     }
   } catch (error) {
     res.status(400).send({ msg: "something went wrong", error });
@@ -44,20 +60,20 @@ hotelRoutes.post("/add", async (req, res) => {
   }
 });
 
-hotelRoutes.patch("/update/:id", async (req, res) => {
+packageRoutes.patch("/update/:id", async (req, res) => {
   const Id = req.params.id;
   const payload = req.body;
 
-  const hotel = await HotelModel.findOne({ _id: Id });
+  const hotel = await PackageModel.findOne({ _id: Id });
 
   const hotelId = hotel.created_by;
-  
+  console.log(hotelId);
   const userId_making_req = req.body.created_by;
   try {
     if (userId_making_req !== hotelId) {
       res.send({ msg: "You are not authorized" });
     } else {
-      await HotelModel.findByIdAndUpdate({ _id: Id }, payload);
+      await PackageModel.findByIdAndUpdate({ _id: Id }, payload);
       res.send({ msg: "updated Sucessfully" });
     }
   } catch (err) {
@@ -66,17 +82,17 @@ hotelRoutes.patch("/update/:id", async (req, res) => {
   }
 });
 
-hotelRoutes.delete("/delete/:id", async (req, res) => {
+packageRoutes.delete("/delete/:id", async (req, res) => {
   const Id = req.params.id;
-  const note = await HotelModel.findOne({ _id: Id });
+  const note = await PackageModel.findOne({ _id: Id });
   const hotelId = note.created_by;
   const userId_making_req = req.body.created_by;
   try {
     if (userId_making_req !== hotelId) {
       res.send({ msg: "You are not Recognized" });
     } else {
-      await HotelModel.findByIdAndDelete({ _id: Id });
-      res.send("Deleted the Hotel Data");
+      await PackageModel.findByIdAndDelete({ _id: Id });
+      res.send("Deleted the Data");
     }
   } catch (err) {
     console.log(err);
@@ -84,6 +100,8 @@ hotelRoutes.delete("/delete/:id", async (req, res) => {
   }
 });
 
+
+
 module.exports = {
-  hotelRoutes,
+  packageRoutes,
 };

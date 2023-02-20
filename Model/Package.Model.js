@@ -1,8 +1,11 @@
 const {mongoose} = require("mongoose");
 
 const packageSchema = mongoose.Schema({
-    placeName: { type: String, required: true, unique: true },
+    packageName: { type: String, required: true, unique: true },
+    source:{ type: String, required: true },
+    destination:{ type: String, required: true},
     image_url: [{ type: String, required: true }],
+    days:{ type: Number, required: true, unique: true },
     phoneNumber:{ type: Number,},
     city:{ type: String, required: true},
     rating:{ type: Number, required: true},

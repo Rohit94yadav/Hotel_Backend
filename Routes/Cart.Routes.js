@@ -39,6 +39,7 @@ cartRouter.post("/add", authenticate, async (req, res) => {
       userEmail: userdata.email,
       roomType: data.roomType,
       bookingDate:data.bookingDate,
+      checkOutDate:data.bookingDate,
       numberofRooms:data.numberofRooms,
       numberofPerson:data.numberofPerson,
       hotelId:hotelData._id,
