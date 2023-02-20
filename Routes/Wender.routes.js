@@ -29,7 +29,12 @@ wenderRouter.post("/register", async (req, res) => {
           payload.password = hash;
           const user = new WenderModel(payload);
           await user.save();
-          res.redirect("http://127.0.0.1:5500/Routes/hi.html");
+          res.status(200).send({
+            msg: "Registration Success",
+            username: user.name,
+            email:user.email,
+            error: false,
+          });
         }
       });
     }
@@ -55,8 +60,8 @@ wenderRouter.post("/login", async (req, res) => {
             jwt.sign(
               {
                 userId: user._id,
-                userName: user.name,
-                Email: user.email,
+                name: user.name,
+                email: user.email,
                 userType: user.userType,
               },
               
