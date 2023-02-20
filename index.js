@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require('cors');
 
 const { connection } = require("./configs/db");
 
@@ -12,7 +13,7 @@ const { tourPlaceRoutes } = require("./Routes/TouristPlace.Routes");
 const { TourTravelRoutes } = require("./Routes/TourTravel.Routes");
 const { packageRoutes } = require("./Routes/Package.Routes");
 const { AdminRegisterRoutes } = require("./Routes/AdminRegister.Routes");
-const { AdminApprovedHotelRouter, AdminApprovedRoutes } = require("./Routes/AdminAprovedHotel.Routes");
+const {  AdminApprovedRoutes } = require("./Routes/AdminAprovedHotel.Routes");
 const { AdminApprovelRejectedRouter } = require("./Routes/AdminRejected.Routes");
 
 
