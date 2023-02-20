@@ -116,7 +116,7 @@ wenderRouter.patch("/update/:id", async (req, res) => {
   }
 });
 
-hotelRoutes.delete("/delete/:id", async (req, res) => {
+wenderRouter.delete("/delete/:id", async (req, res) => {
   const Id = req.params.id;
   try {
       await HotelModel.findByIdAndDelete({ _id: Id });
