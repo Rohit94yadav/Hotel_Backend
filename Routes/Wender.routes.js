@@ -90,4 +90,18 @@ wenderRouter.post("/login", async (req, res) => {
   }
 });
 
+wenderRouter.get("/", async (req, res) => {
+  try {
+    const product = await UserModel.find();
+    res.send({ data: product });
+  } catch (error) {
+    console.log("error", error);
+    res.status(500).send({
+      error: true,
+      msg: "something went wrong",
+    });
+  }
+});
+
+
 module.exports = { wenderRouter };
