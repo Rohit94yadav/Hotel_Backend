@@ -13,10 +13,25 @@ const { UserModel } = require("../Model/User.model");
 
 hotelDataRoutes.use(authenticate);
 
-hotelDataRoutes.get("/", async (req, res) => {
+hotelDataRoutes.get("/hotel", async (req, res) => {
   const payload = req.body;
   try {
     const product = await HotelDataModel.find({ userId: payload.userId });
+    console.log(product);
+    res.send({ data: product });
+  } catch (error) {
+    console.log("error", error);
+    res.status(500).send({
+      error: true,
+      msg: "something went wrong",
+    });
+  }
+});
+
+hotelDataRoutes.get("/", async (req, res) => {
+  const payload = req.body;
+  try {
+    const product = await HotelDataModel.find();
     console.log(product);
     res.send({ data: product });
   } catch (error) {

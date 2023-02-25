@@ -10,7 +10,7 @@ const cartSchema = new mongoose.Schema(
     bookingDate:{ type: Number, required: true },
     checkoutDate:{ type: Number, required: true },
     numberofPerson:{ type: Number, required: true },
-    finalPrice:{ type: Number, required: true },
+    finalPrice:{ type: Number },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "user",

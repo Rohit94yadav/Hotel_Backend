@@ -18,6 +18,7 @@ const { VendorRoutes } = require("./Routes/Vendor.Routes");
 const { hotelDataRoutes } = require("./Routes/HotelData.Routes");
 const fs = require("fs");
 const { parse } = require("path");
+const { BookingRouter } = require("./Routes/Booking.Routes");
 
 
 require("dotenv").config();
@@ -50,7 +51,7 @@ app.use("/agent", AgentRouter);
 
 app.use("/user",UserRouter)
 
-app.use("/allhotel",AllhotelRoutes)
+// app.use("/allhotel",AllhotelRoutes)
 
 
 app.use("/hotel",hotelRoutes);
@@ -71,7 +72,9 @@ app.use("/admin",AdminRegisterRoutes)
 
 app.use("/new",VendorRoutes)
 
-app.use("/allhoteldata",hotelDataRoutes)
+app.use("/allhotel",hotelDataRoutes)
+
+app.use("/book",BookingRouter)
 
 app.listen(process.env.port, async () => {
   try {

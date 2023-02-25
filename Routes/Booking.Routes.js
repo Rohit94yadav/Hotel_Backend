@@ -1,18 +1,15 @@
 const express = require("express");
 const { authenticate } = require("../middleware/authentication.middleware");
 
-const { CartModel } = require("../Model/Cart.Model");
-const { HotelModel } = require("../Model/Hotel.model");
+const { BookingModel } =require("../Model/Booking.Model")
 
-const cartRouter = express.Router();
-const { UserModel } = require("../Model/User.model");
+const BookingRouter = express.Router();
 
-cartRouter.get("/", authenticate, async (req, res) => {
+BookingRouter.get("/", authenticate, async (req, res) => {
   const payload = req.body;
-  // console.log(payload.userId);
 
   try {
-    const product = await CartModel.find({ userId: payload.userId });
+    const product = await BookingModel.find({ userId: payload.userId });
    // console.log(product);
     res.send({ data: product });
   } catch (error) {
@@ -24,13 +21,14 @@ cartRouter.get("/", authenticate, async (req, res) => {
   }
 });
 
-cartRouter.post("/add", authenticate, async (req, res) => {
+BookingRouter.post("/add", authenticate, async (req, res) => {
   const userId = req.body.userId;
   try {
-    const userid = await CartModel.find({ userId:userId });
+    const userid = await BookingModel.find({ userId:userId });
     console.log(userid)
    
-    const cart = await CartModel.create({
+    const cart = await BookingModel.create({
+      username: req.body.username,
       name: req.body.name,
       image: req.body.image,
       price: req.body.price,
@@ -39,9 +37,12 @@ cartRouter.post("/add", authenticate, async (req, res) => {
       bookingDate: req.body.bookingDate,
       checkoutDate: req.body.checkoutDate,
       numberofPerson: req.body.numberofPerson,
+      discount:req.body.discount,
+      paymentMode:req.body.paymentMode,
+      address:req.body.address,
       userId: userId,
       productId:req.body.productId,
-      finalPrice:req.body.quantity*req.body.price
+      finalPrice:req.body.price*req.body.quantity
     });
     return res.status(201).send(cart);
   } catch (e) {
@@ -50,11 +51,11 @@ cartRouter.post("/add", authenticate, async (req, res) => {
 });
 
 
-cartRouter.patch("/update/:id",authenticate, async (req, res) => {
+BookingRouter.patch("/update/:id",authenticate, async (req, res) => {
   const Id = req.params.id;
   const payload = req.body;
  
-  const hotel = await CartModel.findOne({ _id: Id });
+  const hotel = await BookingModel.findOne({ _id: Id });
   
   const hotelId = hotel.userId.toString();
   // console.log(hotelId)
@@ -65,7 +66,7 @@ cartRouter.patch("/update/:id",authenticate, async (req, res) => {
     if (userId_making_req !== hotelId) {
       res.send({ msg: "You are not authorized" });
     } else {
-      await CartModel.findByIdAndUpdate({ _id: Id }, payload);
+      await BookingModel.findByIdAndUpdate({ _id: Id }, payload);
       res.send({ msg: "updated Sucessfully" });
     }
   } catch (err) {
@@ -74,11 +75,11 @@ cartRouter.patch("/update/:id",authenticate, async (req, res) => {
   }
 });
 
-cartRouter.delete("/delete/:id",authenticate, async (req, res) => {
+BookingRouter.delete("/delete/:id",authenticate, async (req, res) => {
   const Id = req.params.id;
   const payload = req.body;
  
-  const hotel = await CartModel.findOne({ _id: Id });
+  const hotel = await BookingModel.findOne({ _id: Id });
   
   const hotelId = hotel.userId.toString();
   // console.log(hotelId)
@@ -89,7 +90,7 @@ cartRouter.delete("/delete/:id",authenticate, async (req, res) => {
     if (userId_making_req !== hotelId) {
       res.send({ msg: "You are not authorized" });
     } else {
-      await CartModel.findByIdAndDelete({ _id: Id }, payload);
+      await BookingModel.findByIdAndDelete({ _id: Id }, payload);
       res.send({ msg: "Deleted Sucessfully" });
     }
   } catch (err) {
@@ -98,4 +99,4 @@ cartRouter.delete("/delete/:id",authenticate, async (req, res) => {
   }
 });
 
-module.exports = { cartRouter };
+module.exports = { BookingRouter };
