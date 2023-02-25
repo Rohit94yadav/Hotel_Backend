@@ -58,7 +58,8 @@ BookingRouter.post("/add", authenticate, async (req, res) => {
       userId: userId,
       productId:req.body.productId,
       finalPrice:req.body.price*req.body.quantity
-    });
+    }
+    );
     return res.status(201).send(cart);
   } catch (e) {
     res.status(500).send(e.message);

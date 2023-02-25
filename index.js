@@ -76,6 +76,9 @@ app.use("/allhotel",hotelDataRoutes)
 
 app.use("/book",BookingRouter)
 
+
+// app.use("/val",AllhotelRoutes)
+
 app.listen(process.env.port, async () => {
   try {
     await connection;

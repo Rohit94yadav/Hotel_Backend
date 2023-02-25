@@ -1,5 +1,6 @@
 const express = require("express");
-const { HotelModel } = require("../Model/Hotel.model");
+
+const { HotelDataModel } = require("../Model/HotelData.Model");
 
 const AllhotelRoutes = express.Router();
 
@@ -24,14 +25,14 @@ AllhotelRoutes.get("/", async (req, res) => {
   }else {
     sortBy = { _id: 1 };
   }
-const data=await HotelModel.find({isApprovedByAdmin:"true"})
+const data=await HotelDataModel.find()
 console.log(data.isApprovedByAdmin)
 
 if(data.length>0){
 
   try {
     if (filter.length>0) {
-        const products = await HotelModel.find({isApprovedByAdmin:"true"})
+        const products = await HotelDataModel.find()
           .where("rating")
           .gte(rating)
           .sort(sortBy)
@@ -39,7 +40,7 @@ if(data.length>0){
           .in(filter)
           .where("city")
           .in(city)
-        const count = await HotelModel.find({isApprovedByAdmin:"true"})
+        const count = await HotelDataModel.find()
           .where("rating")
           .gte(rating)
           .sort(sortBy)
@@ -55,13 +56,13 @@ if(data.length>0){
         res.send({ data: products, total: count });
        
       } else {
-        const count = await HotelModel.find({isApprovedByAdmin:"true"})
+        const count = await HotelDataModel.find()
           .where("rating")
           .gte(rating)
           .sort(sortBy)
           
           .count();
-        const products = await HotelModel.find({isApprovedByAdmin:"true"})
+        const products = await HotelDataModel.find()
           .where("rating")
           .gte(rating)
           .sort(sortBy)
@@ -81,7 +82,7 @@ if(data.length>0){
 AllhotelRoutes.get("/:id", async (req, res) => {
   const id = req.params.id;
   try {
-    const product = await HotelModel.findById(id);
+    const product = await HotelDataModel.findById(id);
     res.send(product);
   } catch (error) {
     res.status(404).send({ msg: "something went wrong" });
