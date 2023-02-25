@@ -10,24 +10,6 @@ require("dotenv").config();
 const { authenticate } = require("../middleware/authentication.middleware");
 
 const { UserModel } = require("../Model/User.model");
-
-hotelDataRoutes.use(authenticate);
-
-hotelDataRoutes.get("/hotel", async (req, res) => {
-  const payload = req.body;
-  try {
-    const product = await HotelDataModel.find({ userId: payload.userId });
-    console.log(product);
-    res.send({ data: product });
-  } catch (error) {
-    console.log("error", error);
-    res.status(500).send({
-      error: true,
-      msg: "something went wrong",
-    });
-  }
-});
-
 hotelDataRoutes.get("/", async (req, res) => {
   const sort = req.query.sort;
   const filter = req.query.filter||"";
@@ -112,6 +94,25 @@ hotelDataRoutes.get("/:id", async (req, res) => {
     res.status(404).send({ msg: "something went wrong" });
   }
 });
+
+hotelDataRoutes.use(authenticate);
+
+hotelDataRoutes.get("/hotel", async (req, res) => {
+  const payload = req.body;
+  try {
+    const product = await HotelDataModel.find({ userId: payload.userId });
+    console.log(product);
+    res.send({ data: product });
+  } catch (error) {
+    console.log("error", error);
+    res.status(500).send({
+      error: true,
+      msg: "something went wrong",
+    });
+  }
+});
+
+
 
 // hotelDataRoutes.patch("/update/:id", async (req, res) => {
 //   const Id = req.params.id;
