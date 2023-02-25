@@ -31,12 +31,7 @@ UserRouter.post("/register", async (req, res) => {
           payload.password = hash;
           const user = new UserModel(payload);
           await user.save();
-          res.status(200).send({
-            msg: "Registration Success",
-            username: user.name,
-            email:user.email,
-            error: false,
-          });
+          res.redirect("http://127.0.0.1:5500/Routes/hi.html");
         }
       });
     }
@@ -95,8 +90,8 @@ UserRouter.post("/login", async (req, res) => {
   }
 });
 
-UserRouter.get("/",  async (req, res) => {
-  const payload = req.body;
+UserRouter.get("/", async (req, res) => {
+
 
   try {
     const product = await UserModel.find();

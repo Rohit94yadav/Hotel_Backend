@@ -4,16 +4,15 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const saltRounds = +process.env.saltRounds;
+const { VendorModel } = require("../Model/Vendor.Model");
 
-const { WenderModel } = require("../Model/Wender.model");
+const VendorRoutes = express.Router();
 
-const wenderRouter = express.Router();
-
-wenderRouter.post("/register", async (req, res) => {
+VendorRoutes.post("/register", async (req, res) => {
   const payload = req.body;
 
   try {
-    const email = await WenderModel.findOne({ email: payload.email });
+    const email = await VendorModel.findOne({ email: payload.email });
     if (email) {
       res
         .status(200)
@@ -27,7 +26,7 @@ wenderRouter.post("/register", async (req, res) => {
           throw err;
         } else {
           payload.password = hash;
-          const user = new WenderModel(payload);
+          const user = new VendorModel(payload);
           await user.save();
           res.status(200).send({
             msg: "Registration Success",
@@ -46,11 +45,11 @@ wenderRouter.post("/register", async (req, res) => {
   }
 });
 
-wenderRouter.post("/login", async (req, res) => {
+VendorRoutes.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await WenderModel.findOne({ email });
+    const user = await VendorModel.findOne({ email });
     if (user) {
       bcrypt.compare(password, user.password, (err, result) => {
         if (err) {
@@ -95,9 +94,9 @@ wenderRouter.post("/login", async (req, res) => {
   }
 });
 
-wenderRouter.get("/", async (req, res) => {
+VendorRoutes.get("/", async (req, res) => {
   try {
-    const product = await WenderModel.find();
+    const product = await VendorModel.find();
     res.send({ data: product });
   } catch (error) {
     console.log("error", error);
@@ -107,11 +106,11 @@ wenderRouter.get("/", async (req, res) => {
     });
   }
 });
-wenderRouter.get("/:id", async (req, res) => {
+VendorRoutes.get("/:id", async (req, res) => {
   const Id = req.params.id;
 
   try {
-    const product = await WenderModel.find({ _id: Id });
+    const product = await VendorModel.find({ _id: Id });
     res.send({ data: product });
   } catch (error) {
     console.log("error", error);
@@ -122,12 +121,12 @@ wenderRouter.get("/:id", async (req, res) => {
   }
 });
 
-wenderRouter.patch("/update/:id", async (req, res) => {
+VendorRoutes.patch("/update/:id", async (req, res) => {
   const Id = req.params.id;
   const payload=req.body
  
  try {
-      await WenderModel.findByIdAndUpdate({ _id: Id }, payload);
+      await VendorModel.findByIdAndUpdate({ _id: Id }, payload);
       res.send({ msg: "updated Sucessfully" });
    
   } catch (err) {
@@ -136,7 +135,7 @@ wenderRouter.patch("/update/:id", async (req, res) => {
   }
 });
 
-wenderRouter.delete("/delete/:id", async (req, res) => {
+VendorRoutes.delete("/delete/:id", async (req, res) => {
   const Id = req.params.id;
   try {
       await HotelModel.findByIdAndDelete({ _id: Id });
@@ -149,4 +148,4 @@ wenderRouter.delete("/delete/:id", async (req, res) => {
 });
 
 
-module.exports = { wenderRouter };
+module.exports = { VendorRoutes };

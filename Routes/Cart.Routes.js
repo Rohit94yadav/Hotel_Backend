@@ -41,7 +41,6 @@ cartRouter.post("/add", authenticate, async (req, res) => {
       numberofPerson: req.body.numberofPerson,
       userId: userId,
       productId:req.body.productId,
-      finalPrice:req.body.quantity*req.body.price
     });
     return res.status(201).send(cart);
   } catch (e) {

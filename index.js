@@ -1,9 +1,8 @@
 const express = require("express");
-const cors = require('cors');
 
 const { connection } = require("./configs/db");
 
-const { wenderRouter } = require("./Routes/Wender.routes");
+const { AgentRouter } = require("./Routes/Agent.routes");
 
 const { hotelRoutes } = require("./Routes/Hotel.routes");
 const { UserRouter } = require("./Routes/User.routes");
@@ -15,15 +14,19 @@ const { packageRoutes } = require("./Routes/Package.Routes");
 const { AdminRegisterRoutes } = require("./Routes/AdminRegister.Routes");
 const {  AdminApprovedRoutes } = require("./Routes/AdminAprovedHotel.Routes");
 const { AdminApprovelRejectedRouter } = require("./Routes/AdminRejected.Routes");
+const { VendorRoutes } = require("./Routes/Vendor.Routes");
+const { hotelDataRoutes } = require("./Routes/HotelData.Routes");
+const fs = require("fs");
+const { parse } = require("path");
 
 
 require("dotenv").config();
 
 const app = express();
 
-app.use(cors({
-  origin:"*"
-}));
+// app.use(cors({
+//   origin:"*"
+// }));
 
 app.use(express.json());
 
@@ -31,10 +34,19 @@ app.get("/", (req, res) => {
   res.send("Welcome");
 });
 
+function recordMiddleware(req, res, next) {
+  const recordData = req.body; 
+  console.log(`Record data: ${JSON.stringify(recordData)}`);
+  next(); // call the next middleware function in the chain
+}
+
+// Use the recordMiddleware function for all requests
+app.use(recordMiddleware);
 
 
 
-app.use("/vendor", wenderRouter);
+app.use("/agent", AgentRouter);
+
 
 app.use("/user",UserRouter)
 
@@ -57,6 +69,9 @@ app.use("/package",packageRoutes)
 
 app.use("/admin",AdminRegisterRoutes)
 
+app.use("/new",VendorRoutes)
+
+app.use("/allhoteldata",hotelDataRoutes)
 
 app.listen(process.env.port, async () => {
   try {

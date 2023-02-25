@@ -4,22 +4,21 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const saltRounds = +process.env.saltRounds;
-const { authenticate } = require("../middleware/authentication.middleware");
-const { AdminRegisterModel } = require("../Model/AdminRegister");
 
-const AdminRegisterRoutes = express.Router();
+const { WenderModel } = require("../Model/Wender.model");
 
-AdminRegisterRoutes.post("/register", async (req, res) => {
+const AgentRouter = express.Router();
+
+AgentRouter.post("/register", async (req, res) => {
   const payload = req.body;
-  console.log(payload)
 
   try {
-    const email = await AdminRegisterModel.findOne({ email: payload.email });
+    const email = await WenderModel.findOne({ email: payload.email });
     if (email) {
       res
         .status(200)
         .send({
-          msg: "Email is already Exists",
+          msg: "Email is already Present Please try to again Email",
           error: true,
         });
     } else {
@@ -28,14 +27,14 @@ AdminRegisterRoutes.post("/register", async (req, res) => {
           throw err;
         } else {
           payload.password = hash;
-          const user = new AdminRegisterModel(payload);
+          const user = new WenderModel(payload);
           await user.save();
-          res.send({
-            msg: "Admin Register",
+          res.status(200).send({
+            msg: "Registration Success",
             username: user.name,
-            Email:user.email,
+            email:user.email,
             error: false,
-          });;
+          });
         }
       });
     }
@@ -47,12 +46,11 @@ AdminRegisterRoutes.post("/register", async (req, res) => {
   }
 });
 
-
-AdminRegisterRoutes.post("/login", async (req, res) => {
+AgentRouter.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await AdminRegisterModel.findOne({ email });
+    const user = await WenderModel.findOne({ email });
     if (user) {
       bcrypt.compare(password, user.password, (err, result) => {
         if (err) {
@@ -62,10 +60,11 @@ AdminRegisterRoutes.post("/login", async (req, res) => {
             jwt.sign(
               {
                 userId: user._id,
-                userName: user.name,
-                Email: user.email,
+                name: user.name,
+                email: user.email,
                 userType: user.userType,
               },
+              
               process.env.key,
               (err, token) => {
                 if (err) {
@@ -96,11 +95,11 @@ AdminRegisterRoutes.post("/login", async (req, res) => {
   }
 });
 
-AdminRegisterRoutes.get("/", authenticate, async (req, res) => {
-  const payload = req.body;
+AgentRouter.get("/", async (req, res) => {
+
 
   try {
-    const product = await AdminRegisterModel.find({ _id: payload.userId });
+    const product = await WenderModel.find();
     res.send({ data: product });
   } catch (error) {
     console.log("error", error);
@@ -111,4 +110,45 @@ AdminRegisterRoutes.get("/", authenticate, async (req, res) => {
   }
 });
 
-module.exports = { AdminRegisterRoutes };
+AgentRouter.get("/:id", async (req, res) => {
+  const Id = req.params.id;
+
+  try {
+    const product = await WenderModel.find({ _id: Id });
+    res.send({ data: product });
+  } catch (error) {
+    console.log("error", error);
+    res.status(500).send({
+      error: true,
+      msg: "something went wrong",
+    });
+  }
+});
+
+AgentRouter.patch("/update/:id", async (req, res) => {
+  const Id = req.params.id;
+  const payload=req.body
+ 
+ try {
+      await WenderModel.findByIdAndUpdate({ _id: Id }, payload);
+      res.send({ msg: "updated Sucessfully" });
+   
+  } catch (err) {
+    console.log(err);
+    res.send({ err: "Something went wrong" });
+  }
+});
+
+AgentRouter.delete("/delete/:id", async (req, res) => {
+  const Id = req.params.id;
+  try {
+      await WenderModel.findByIdAndDelete({ _id: Id });
+      res.send("Deleted the Hotel Data");
+
+  } catch (err) {
+    console.log(err);
+    res.send({ msg: "Something went wrong" });
+  }
+});
+
+module.exports = { AgentRouter };

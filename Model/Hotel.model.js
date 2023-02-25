@@ -2,9 +2,10 @@ const { mongoose } = require("mongoose");
 
 const hotelSchema = mongoose.Schema(
   {
-    name: { type: String, required: true, unique: true },
+    name: { type: String,  unique: true },
     image_url: [{ type: String, required: true }],
     email: { type: String, required: true },
+    password:{type: String,},
     phone: { type: Number, required: true },
     address: { type: String, required: true },
     city: { type: String, required: true },
@@ -24,7 +25,7 @@ const hotelSchema = mongoose.Schema(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "wender",
-      required: true,
+      required: true
     }
   },
   {

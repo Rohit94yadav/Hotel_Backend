@@ -25,7 +25,7 @@ hotelRoutes.post("/add", async (req, res) => {
   const payload = req.body;
 
   try {
-    const title = await HotelModel.findOne({ hotelName: payload.hotelName });
+    const title = await HotelModel.findOne({ name: payload.name });
     if (title) {
       res
         .status(200)
@@ -51,7 +51,7 @@ hotelRoutes.patch("/update/:id", async (req, res) => {
   const hotel = await HotelModel.findOne({ _id: Id });
 
   const hotelId = hotel.created_by;
-  
+  console.log(hotelId);
   const userId_making_req = req.body.created_by;
   try {
     if (userId_making_req !== hotelId) {

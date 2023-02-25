@@ -2,7 +2,7 @@ const {mongoose} = require("mongoose");
 
 const TouristPlaceSchema = mongoose.Schema({
   
-    placeName: { type: String, required: true, unique: true },
+    name: { type: String, required: true, unique: true },
     image_url: [{ type: String, required: true }],
     address:{ type: String, required: true},
     city:{ type: String, required: true},
