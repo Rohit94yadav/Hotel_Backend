@@ -9,7 +9,7 @@ require("dotenv").config();
 
 const { authenticate } = require("../middleware/authentication.middleware");
 
-const { UserModel } = require("../Model/User.model");
+
 hotelDataRoutes.get("/", async (req, res) => {
   const sort = req.query.sort;
   const filter = req.query.filter||"";
@@ -114,27 +114,7 @@ hotelDataRoutes.get("/hotel", async (req, res) => {
 
 
 
-// hotelDataRoutes.patch("/update/:id", async (req, res) => {
-//   const Id = req.params.id;
-//   const payload = req.body;
 
-//   const hotel = await HotelModel.findOne({ _id: Id });
-
-//   const hotelId = hotel.created_by;
-//   console.log(hotelId);
-//   const userId_making_req = req.body.created_by;
-//   try {
-//     if (userId_making_req !== hotelId) {
-//       res.send({ msg: "You are not authorized" });
-//     } else {
-//       await HotelModel.findByIdAndUpdate({ _id: Id }, payload);
-//       res.send({ msg: "updated Sucessfully" });
-//     }
-//   } catch (err) {
-//     console.log(err);
-//     res.send({ err: "Something went wrong" });
-//   }
-// });
 
 hotelDataRoutes.post("/add", async (req, res) => {
   const payload = req.body;
