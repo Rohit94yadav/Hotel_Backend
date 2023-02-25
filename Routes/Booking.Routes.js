@@ -20,6 +20,21 @@ BookingRouter.get("/", authenticate, async (req, res) => {
     });
   }
 });
+BookingRouter.get("/allbooking", authenticate, async (req, res) => {
+  const payload = req.body;
+
+  try {
+    const product = await BookingModel.find();
+   // console.log(product);
+    res.send({ data: product });
+  } catch (error) {
+    console.log("error", error);
+    res.status(500).send({
+      error: true,
+      msg: "something went wrong",
+    });
+  }
+});
 
 BookingRouter.post("/add", authenticate, async (req, res) => {
   const userId = req.body.userId;
