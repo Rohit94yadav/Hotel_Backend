@@ -1,5 +1,5 @@
 const express = require("express");
-
+const cors=require("cors")
 const { connection } = require("./configs/db");
 
 const { AgentRouter } = require("./Routes/Agent.routes");
