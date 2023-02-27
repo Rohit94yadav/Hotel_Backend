@@ -31,7 +31,11 @@ UserRouter.post("/register", async (req, res) => {
           payload.password = hash;
           const user = new UserModel(payload);
           await user.save();
-          res.redirect("http://127.0.0.1:5500/Routes/hi.html");
+          res.status(200).send({
+            msg: "Registration success",
+            username: user.name,
+            error: false,
+          });
         }
       });
     }
