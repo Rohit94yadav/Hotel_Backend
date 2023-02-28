@@ -34,6 +34,8 @@ UserRouter.post("/register", async (req, res) => {
           res.status(200).send({
             msg: "Registration success",
             username: user.name,
+            email:user.email,
+            phone:user.phone,
             error: false,
           });
         }
