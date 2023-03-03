@@ -14,7 +14,7 @@ const hotelDataSchema = mongoose.Schema(
     ownerName: { type: String,  },
     contactName: { type: String },
     date:{type: String},
-    
+
     alltypes:[
       {
         type:{ type: String, },
@@ -23,7 +23,8 @@ const hotelDataSchema = mongoose.Schema(
         facilites:{ type: String, },
         availableitem:{ type: Number, },
         discountprice:{ type: Number, },
-        description:{type:String}
+        description:{type:String},
+        off:{ type: Number}
       }
     ],
     userId: {
