@@ -4,9 +4,99 @@ const tourPlaceRoutes = express.Router();
 const { authenticate } = require("../middleware/authentication.middleware");
 const { TouristModel } = require("../Model/Touristplace.Model");
 
+
+
+tourPlaceRoutes.get("/allplace", async (req, res) => {
+  const sort = req.query.sort;
+  const filter = req.query.filter||"";
+  const city = req.query.city||"";
+  const roomType = req.query.roomType||"";
+  const rating = +req.query.rating || 0;
+  const priceperNight = +req.query.priceperNight || 0;
+  
+
+  let sortBy;
+  if (sort == "low") {
+    sortBy = { rating: 1 };
+  } else if (sort == "high") {
+    sortBy = { rating: -1 };
+  }else if (sort == "phigh") {
+    sortBy = { priceperNight: -1 };
+  }else if (sort == "plow") {
+    sortBy = { priceperNight: 1 };
+  }else {
+    sortBy = { _id: 1 };
+  }
+const data=await TouristModel.find()
+console.log(data.isApprovedByAdmin)
+
+if(data.length>0){
+
+  try {
+    if (filter.length>0) {
+        const products = await TouristModel.find()
+          .where("rating")
+          .gte(rating)
+          .sort(sortBy)
+          .where("name")
+          .in(filter)
+          .where("city")
+          .in(city)
+        const count = await TouristModel.find()
+          .where("rating")
+          .gte(rating)
+          .sort(sortBy)
+          .where("priceperNight")
+          .gte(rating)
+          .sort(sortBy)
+          .where("name")
+          .in(filter)
+          .where("city")
+          .in(city)
+          .count();
+  
+        res.send({ data: products, total: count });
+       
+      } else {
+        const count = await TouristModel.find()
+          .where("rating")
+          .gte(rating)
+          .sort(sortBy)
+          
+          .count();
+        const products = await TouristModel.find()
+          .where("rating")
+          .gte(rating)
+          .sort(sortBy)
+          
+        res.send({ data: products, total: count });
+      }
+  } catch (err) {
+    res.send({ msg: "Could not get Hotel" });
+  }
+}else{
+  res.send({ msg: "Hotel Empty" });
+}
+
+});
+
+
+tourPlaceRoutes.get("/:id", async (req, res) => {
+  const id = req.params.id;
+  try {
+    const product = await TouristModel.findById(id);
+    res.send(product);
+  } catch (error) {
+    res.status(404).send({ msg: "something went wrong" });
+  }
+});
+
+
 tourPlaceRoutes.use(authenticate);
 
 tourPlaceRoutes.get("/", async (req, res) => {
+
+
   const payload = req.body;
   try {
     const product = await TouristModel.find({ userId: payload.userId });
@@ -19,28 +109,17 @@ tourPlaceRoutes.get("/", async (req, res) => {
       msg: "something went wrong",
     });
   }
+
+
 });
 
-tourPlaceRoutes.get("/allplace", async (req, res) => {
-    const payload = req.body;
-    try {
-      const product = await TouristModel.find();
-      console.log(product);
-      res.send({ data: product });
-    } catch (error) {
-      console.log("error", error);
-      res.status(500).send({
-        error: true,
-        msg: "something went wrong",
-      });
-    }
-  });
+
 
 tourPlaceRoutes.post("/add", async (req, res) => {
   const payload = req.body;
 
   try {
-    const title = await TouristModel.findOne({ placeName: payload.placeName });
+    const title = await TouristModel.findOne({ name: payload.name });
     if (title) {
       res
         .status(200)

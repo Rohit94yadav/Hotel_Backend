@@ -10,7 +10,7 @@ const TouristPlaceSchema = mongoose.Schema({
     rating:{ type: Number, required: true},
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "wender",
+      ref: "admin",
       required: true,
     }
   },
@@ -20,7 +20,7 @@ const TouristPlaceSchema = mongoose.Schema({
   }
   );
   
-  const TouristModel = mongoose.model("Tourist_data", TouristPlaceSchema);
+  const TouristModel = mongoose.model("Tourist_place_data", TouristPlaceSchema);
 
   module.exports = {
     TouristModel,
