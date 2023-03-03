@@ -70,7 +70,7 @@ app.use("/package",packageRoutes)
 
 app.use("/admin",AdminRegisterRoutes)
 
-app.use("/new",VendorRoutes)
+app.use("/vendor",VendorRoutes)
 
 app.use("/allhotel",hotelDataRoutes)
 

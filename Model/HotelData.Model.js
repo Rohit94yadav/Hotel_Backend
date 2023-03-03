@@ -14,6 +14,7 @@ const hotelDataSchema = mongoose.Schema(
     ownerName: { type: String,  },
     contactName: { type: String },
     date:{type: String},
+    
     alltypes:[
       {
         type:{ type: String, },
