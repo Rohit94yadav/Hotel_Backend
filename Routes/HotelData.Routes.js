@@ -142,16 +142,8 @@ hotelDataRoutes.post("/add", async (req, res) => {
       ownerName: data[0].ownerName,
       contactName: data[0].contactName,
       date: payload.date,
-      alltypes: [{
-        type:payload.type,
-        numberofitem:payload.numberofitem,
-        price:payload.price,
-        facilites:payload.facilites,
-        availableitem:payload.availableitem,
-        discountprice:payload.discountprice,
-        description:payload.description,
-        off:{type:Number, default:0}
-      }],
+      alltypes: payload.alltypes
+        
     });
 
     return res.status(201).send(cart);
