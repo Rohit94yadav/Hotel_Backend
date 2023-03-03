@@ -12,32 +12,30 @@ const { authenticate } = require("../middleware/authentication.middleware");
 
 hotelDataRoutes.get("/", async (req, res) => {
   const sort = req.query.sort;
-  const filter = req.query.filter||"";
-  const city = req.query.city||"";
-  const roomType = req.query.roomType||"";
+  const filter = req.query.filter || "";
+  const city = req.query.city || "";
+  const roomType = req.query.roomType || "";
   const rating = +req.query.rating || 0;
   const priceperNight = +req.query.priceperNight || 0;
-  
 
   let sortBy;
   if (sort == "low") {
     sortBy = { rating: 1 };
   } else if (sort == "high") {
     sortBy = { rating: -1 };
-  }else if (sort == "phigh") {
+  } else if (sort == "phigh") {
     sortBy = { priceperNight: -1 };
-  }else if (sort == "plow") {
+  } else if (sort == "plow") {
     sortBy = { priceperNight: 1 };
-  }else {
+  } else {
     sortBy = { _id: 1 };
   }
-const data=await HotelDataModel.find()
-console.log(data.isApprovedByAdmin)
+  const data = await HotelDataModel.find();
+  console.log(data.isApprovedByAdmin);
 
-if(data.length>0){
-
-  try {
-    if (filter.length>0) {
+  if (data.length > 0) {
+    try {
+      if (filter.length > 0) {
         const products = await HotelDataModel.find()
           .where("rating")
           .gte(rating)
@@ -45,7 +43,7 @@ if(data.length>0){
           .where("name")
           .in(filter)
           .where("city")
-          .in(city)
+          .in(city);
         const count = await HotelDataModel.find()
           .where("rating")
           .gte(rating)
@@ -58,32 +56,29 @@ if(data.length>0){
           .where("city")
           .in(city)
           .count();
-  
+
         res.send({ data: products, total: count });
-       
       } else {
         const count = await HotelDataModel.find()
           .where("rating")
           .gte(rating)
           .sort(sortBy)
-          
+
           .count();
         const products = await HotelDataModel.find()
           .where("rating")
           .gte(rating)
-          .sort(sortBy)
-          
+          .sort(sortBy);
+
         res.send({ data: products, total: count });
       }
-  } catch (err) {
-    res.send({ msg: "Could not get Hotel" });
+    } catch (err) {
+      res.send({ msg: "Could not get Hotel" });
+    }
+  } else {
+    res.send({ msg: "Hotel Empty" });
   }
-}else{
-  res.send({ msg: "Hotel Empty" });
-}
-
 });
-
 
 hotelDataRoutes.get("/:id", async (req, res) => {
   const id = req.params.id;
@@ -95,13 +90,28 @@ hotelDataRoutes.get("/:id", async (req, res) => {
   }
 });
 
-hotelDataRoutes.use(authenticate);
-
-hotelDataRoutes.get("/hotel", async (req, res) => {
+hotelDataRoutes.patch("/update/offer/:id", async (req, res) => {
+  const Id = req.params.id;
   const payload = req.body;
+
   try {
-    const product = await HotelDataModel.find({ userId: payload.userId });
-    console.log(product);
+    await HotelDataModel.findByIdAndUpdate({ _id: Id }, payload);
+    res.send({ msg: "updated Sucessfully" });
+  } catch (err) {
+    console.log(err);
+    res.send({ err: "Something went wrong" });
+  }
+});
+
+// hotelDataRoutes.use(authenticate);
+
+hotelDataRoutes.get("/all/:id", authenticate, async (req, res) => {
+  const Id = req.params.id;
+   console.log(typeof(payload));
+
+  try {
+    const product = await HotelDataModel.find({ userId: Id });
+     console.log(product);
     res.send({ data: product });
   } catch (error) {
     console.log("error", error);
@@ -114,19 +124,9 @@ hotelDataRoutes.get("/hotel", async (req, res) => {
 
 
 
-
-
 hotelDataRoutes.post("/add", async (req, res) => {
   const payload = req.body;
-  const Id = req.params;
   const data = await HotelModel.find({ _id: payload.hotelId });
-  // const y = payload.alltypes;
-  // const fun = [];
-  // for (let i = 0; i < y.length; i++) {
-  //   fun.push(y[i]);
-  // }
-  newHobby = { type: payload.type};
-
   try {
     const cart = await HotelDataModel.create({
       hotelId: payload.hotelId,
@@ -142,8 +142,16 @@ hotelDataRoutes.post("/add", async (req, res) => {
       ownerName: data[0].ownerName,
       contactName: data[0].contactName,
       date: payload.date,
-      alltypes: [
-        {type:newHobby} ]      
+      alltypes: [{
+        type:payload.type,
+        numberofitem:payload.numberofitem,
+        price:payload.price,
+        facilites:payload.facilites,
+        availableitem:payload.availableitem,
+        discountprice:payload.discountprice,
+        description:payload.description,
+        off:{type:Number, default:0}
+      }],
     });
 
     return res.status(201).send(cart);
@@ -155,17 +163,15 @@ hotelDataRoutes.post("/add", async (req, res) => {
 hotelDataRoutes.patch("/update/:id", async (req, res) => {
   const Id = req.params.id;
   const payload = req.body;
- 
+
   try {
-    
-      await HotelDataModel.findByIdAndUpdate({ _id: Id }, payload);
-      res.send({ msg: "updated Sucessfully" });
+    await HotelDataModel.findByIdAndUpdate({ _id: Id }, payload);
+    res.send({ msg: "updated Sucessfully" });
   } catch (err) {
     console.log(err);
     res.send({ err: "Something went wrong" });
   }
 });
-
 
 hotelDataRoutes.delete("/delete/:id", async (req, res) => {
   const Id = req.params.id;
