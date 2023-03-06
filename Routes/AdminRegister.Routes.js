@@ -5,16 +5,18 @@ const jwt = require("jsonwebtoken");
 
 const saltRounds = +process.env.saltRounds;
 const { authenticate } = require("../middleware/authentication.middleware");
-const { AdminRegisterModel } = require("../Model/AdminRegister");
+const { UserModel } = require("../Model/User.model");
+
 
 const AdminRegisterRoutes = express.Router();
 
 AdminRegisterRoutes.post("/register", async (req, res) => {
   const payload = req.body;
-  console.log(payload)
+  payload.userType="admin"
+ 
 
   try {
-    const email = await AdminRegisterModel.findOne({ email: payload.email });
+    const email = await UserModel.findOne({ email: payload.email });
     if (email) {
       res
         .status(200)
@@ -28,7 +30,7 @@ AdminRegisterRoutes.post("/register", async (req, res) => {
           throw err;
         } else {
           payload.password = hash;
-          const user = new AdminRegisterModel(payload);
+          const user = new UserModel(payload);
           await user.save();
           res.send({
             msg: "Admin Register",
@@ -52,7 +54,7 @@ AdminRegisterRoutes.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await AdminRegisterModel.findOne({ email });
+    const user = await UserModel.findOne({ email });
     if (user) {
       bcrypt.compare(password, user.password, (err, result) => {
         if (err) {
@@ -100,7 +102,7 @@ AdminRegisterRoutes.get("/", authenticate, async (req, res) => {
   const payload = req.body;
 
   try {
-    const product = await AdminRegisterModel.find({ _id: payload.userId });
+    const product = await UserModel.find({ _id: payload.userId });
     res.send({ data: product });
   } catch (error) {
     console.log("error", error);

@@ -8,110 +8,139 @@ const { HotelDataModel } = require("../Model/HotelData.Model");
 require("dotenv").config();
 
 const { authenticate } = require("../middleware/authentication.middleware");
+const { record } = require("../middleware/logger.middleware");
+const {
+  AutheriseRole,
+  AutheriseRolevendor,
+  User_admin_vendor
+
+} = require("../middleware/AutheriseRole.middleware");
 
 
-hotelDataRoutes.get("/", async (req, res) => {
-  const sort = req.query.sort;
-  const filter = req.query.filter || "";
-  const city = req.query.city || "";
-  const roomType = req.query.roomType || "";
-  const rating = +req.query.rating || 0;
-  const priceperNight = +req.query.priceperNight || 0;
 
-  let sortBy;
-  if (sort == "low") {
-    sortBy = { rating: 1 };
-  } else if (sort == "high") {
-    sortBy = { rating: -1 };
-  } else if (sort == "phigh") {
-    sortBy = { priceperNight: -1 };
-  } else if (sort == "plow") {
-    sortBy = { priceperNight: 1 };
-  } else {
-    sortBy = { _id: 1 };
-  }
-  const data = await HotelDataModel.find();
-  console.log(data.isApprovedByAdmin);
+hotelDataRoutes.get(
+  "/",
+  record,
+  authenticate,
+  User_admin_vendor,
+  async (req, res) => {
+    const sort = req.query.sort;
+    const filter = req.query.filter || "";
+    const city = req.query.city || "";
+    const rating = +req.query.rating || 0;
+   
 
-  if (data.length > 0) {
-    try {
-      if (filter.length > 0) {
-        const products = await HotelDataModel.find()
-          .where("rating")
-          .gte(rating)
-          .sort(sortBy)
-          .where("name")
-          .in(filter)
-          .where("city")
-          .in(city);
-        const count = await HotelDataModel.find()
-          .where("rating")
-          .gte(rating)
-          .sort(sortBy)
-          .where("priceperNight")
-          .gte(rating)
-          .sort(sortBy)
-          .where("name")
-          .in(filter)
-          .where("city")
-          .in(city)
-          .count();
-
-        res.send({ data: products, total: count });
-      } else {
-        const count = await HotelDataModel.find()
-          .where("rating")
-          .gte(rating)
-          .sort(sortBy)
-
-          .count();
-        const products = await HotelDataModel.find()
-          .where("rating")
-          .gte(rating)
-          .sort(sortBy);
-
-        res.send({ data: products, total: count });
-      }
-    } catch (err) {
-      res.send({ msg: "Could not get Hotel" });
+    let sortBy;
+    if (sort == "low") {
+      sortBy = { rating: 1 };
+    } else if (sort == "high") {
+      sortBy = { rating: -1 };
+    } else if (sort == "phigh") {
+      sortBy = { priceperNight: -1 };
+    } else if (sort == "plow") {
+      sortBy = { priceperNight: 1 };
+    } else {
+      sortBy = { _id: 1 };
     }
-  } else {
-    res.send({ msg: "Hotel Empty" });
-  }
-});
+    const data = await HotelDataModel.find();
+    console.log(data.isApprovedByAdmin);
 
-hotelDataRoutes.get("/:id", async (req, res) => {
-  const id = req.params.id;
-  try {
-    const product = await HotelDataModel.findById(id);
-    res.send(product);
-  } catch (error) {
-    res.status(404).send({ msg: "something went wrong" });
-  }
-});
+    if (data.length > 0) {
+      try {
+        if (filter.length > 0) {
+          const products = await HotelDataModel.find()
+            .where("rating")
+            .gte(rating)
+            .sort(sortBy)
+            .where("name")
+            .in(filter)
+            .where("city")
+            .in(city);
+          const count = await HotelDataModel.find()
+            .where("rating")
+            .gte(rating)
+            .sort(sortBy)
+            .where("priceperNight")
+            .gte(rating)
+            .sort(sortBy)
+            .where("name")
+            .in(filter)
+            .where("city")
+            .in(city)
+            .count();
 
-hotelDataRoutes.patch("/update/offer/:id", async (req, res) => {
+          res.send({ data: products, total: count });
+        } else {
+          const count = await HotelDataModel.find()
+            .where("rating")
+            .gte(rating)
+            .sort(sortBy)
+
+            .count();
+          const products = await HotelDataModel.find()
+            .where("rating")
+            .gte(rating)
+            .sort(sortBy);
+
+          res.send({ data: products, total: count });
+        }
+      } catch (err) {
+        res.send({ msg: "Could not get Hotel" });
+      }
+    } else {
+      res.send({ msg: "Hotel Empty" });
+    }
+  }
+);
+
+hotelDataRoutes.get(
+  "/:id",
+  authenticate,
+  User_admin_vendor,
+  async (req, res) => {
+    const id = req.params.id;
+    try {
+      const product = await HotelDataModel.findById(id);
+      res.send(product);
+    } catch (error) {
+      res.status(404).send({ msg: "something went wrong" });
+    }
+  }
+);
+
+hotelDataRoutes.patch(
+  "/update/offer/:id",
+  authenticate,
+  record,
+  AutheriseRole,
+  async (req, res) => {
+    const Id = req.params.id;
+
+    try {
+      const data = await HotelDataModel.findById(Id);
+      data.alltypes.forEach((item) => {
+        if (item._id.toString() == req.query.hotelId) {
+          item.off = req.body.off;
+        }
+      });
+      await data.save();
+      res.send(data.alltypes);
+    } catch (err) {
+      console.log(err);
+      res.send({ err: "Something went wrong" });
+    }
+  }
+);
+
+// %%%%%%%%%%%%%%%%%%%%  (vendor See his data)  %%%%%%%%%%%%%%%%%%%%%%%
+
+hotelDataRoutes.get("/all/:id", authenticate,AutheriseRolevendor, async (req, res) => {
   const Id = req.params.id;
-  const payload = req.body;
-
-  try {
-    await HotelDataModel.findByIdAndUpdate({ _id: Id }, payload);
-    res.send({ msg: "updated Sucessfully" });
-  } catch (err) {
-    console.log(err);
-    res.send({ err: "Something went wrong" });
-  }
-});
-
-// hotelDataRoutes.use(authenticate);
-
-hotelDataRoutes.get("/all/:id", authenticate, async (req, res) => {
-  const Id = req.params.id;
-   console.log(typeof(payload));
+  console.log(typeof payload);
 
   try {
     const product = await HotelDataModel.find({ userId: Id });
-     console.log(product);
+    console.log(product);
     res.send({ data: product });
   } catch (error) {
     console.log("error", error);
@@ -122,9 +151,7 @@ hotelDataRoutes.get("/all/:id", authenticate, async (req, res) => {
   }
 });
 
-
-
-hotelDataRoutes.post("/add", async (req, res) => {
+hotelDataRoutes.post("/add",authenticate,AutheriseRolevendor, async (req, res) => {
   const payload = req.body;
   const data = await HotelModel.find({ _id: payload.hotelId });
   try {
@@ -142,8 +169,18 @@ hotelDataRoutes.post("/add", async (req, res) => {
       ownerName: data[0].ownerName,
       contactName: data[0].contactName,
       date: payload.date,
-      alltypes: payload.alltypes
-        
+      alltypes: [
+        {
+          type: payload.type,
+          numberofitem: payload.numberofitem,
+          price: payload.price,
+          facilites: payload.facilites,
+          availableitem: payload.availableitem,
+          discountprice: payload.discountprice,
+          description: payload.description,
+          off: 0,
+        },
+      ],
     });
 
     return res.status(201).send(cart);
@@ -152,7 +189,7 @@ hotelDataRoutes.post("/add", async (req, res) => {
   }
 });
 
-hotelDataRoutes.patch("/update/:id", async (req, res) => {
+hotelDataRoutes.patch("/update/:id",record, authenticate,AutheriseRolevendor, async (req, res) => {
   const Id = req.params.id;
   const payload = req.body;
 
@@ -165,7 +202,7 @@ hotelDataRoutes.patch("/update/:id", async (req, res) => {
   }
 });
 
-hotelDataRoutes.delete("/delete/:id", async (req, res) => {
+hotelDataRoutes.delete("/delete/:id",authenticate,AutheriseRolevendor, async (req, res) => {
   const Id = req.params.id;
   const note = await HotelDataModel.findOne({ _id: Id });
   const hotelId = note.created_by;

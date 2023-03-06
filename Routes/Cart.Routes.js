@@ -2,17 +2,17 @@ const express = require("express");
 const { authenticate } = require("../middleware/authentication.middleware");
 
 const { CartModel } = require("../Model/Cart.Model");
-const { HotelModel } = require("../Model/Hotel.model");
+
 
 const cartRouter = express.Router();
-const { UserModel } = require("../Model/User.model");
+
 
 cartRouter.get("/", authenticate, async (req, res) => {
   const payload = req.body;
   // console.log(payload.userId);
 
   try {
-    const product = await CartModel.find({ userId: payload.userId });
+    const product = await CartModel.find({ userId: payload});
    // console.log(product);
     res.send({ data: product });
   } catch (error) {

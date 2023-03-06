@@ -1,11 +1,11 @@
 const {mongoose} = require("mongoose");
 
 const packageSchema = mongoose.Schema({
-    packageName: { type: String, required: true, unique: true },
-    source:{ type: String, required: true },
+    packageName: { type: String, },
+    source:{ type: String,  },
     destination:{ type: String, required: true},
     image_url: [{ type: String, required: true }],
-    days:{ type: Number, required: true, unique: true },
+    Totaldays:{ type: Number },
     phoneNumber:{ type: Number,},
     city:{ type: String, required: true},
     rating:{ type: Number, required: true},
@@ -19,7 +19,7 @@ const packageSchema = mongoose.Schema({
     ],
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "wender",
+      ref: "admin",
       required: true,
     }
   },

@@ -4,34 +4,34 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const saltRounds = +process.env.saltRounds;
-const { VendorModel } = require("../Model/Vendor.Model");
+
+const { UserModel } = require("../Model/User.model");
 
 const VendorRoutes = express.Router();
 
 VendorRoutes.post("/register", async (req, res) => {
   const payload = req.body;
+  payload.userType="vendor"
 
   try {
-    const email = await VendorModel.findOne({ email: payload.email });
+    const email = await UserModel.findOne({ email: payload.email });
     if (email) {
-      res
-        .status(200)
-        .send({
-          msg: "Email is already Present Please try to again Email",
-          error: true,
-        });
+      res.status(200).send({
+        msg: "Email is already Present Please try to again Email",
+        error: true,
+      });
     } else {
       bcrypt.hash(payload.password, saltRounds, async (err, hash) => {
         if (err) {
           throw err;
         } else {
           payload.password = hash;
-          const user = new VendorModel(payload);
+          const user = new UserModel(payload);
           await user.save();
           res.status(200).send({
             msg: "Registration Success",
             username: user.name,
-            email:user.email,
+            email: user.email,
             error: false,
           });
         }
@@ -49,7 +49,7 @@ VendorRoutes.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await VendorModel.findOne({ email });
+    const user = await UserModel.findOne({ email });
     if (user) {
       bcrypt.compare(password, user.password, (err, result) => {
         if (err) {
@@ -63,7 +63,7 @@ VendorRoutes.post("/login", async (req, res) => {
                 email: user.email,
                 userType: user.userType,
               },
-              
+
               process.env.key,
               (err, token) => {
                 if (err) {
@@ -96,7 +96,7 @@ VendorRoutes.post("/login", async (req, res) => {
 
 VendorRoutes.get("/", async (req, res) => {
   try {
-    const product = await VendorModel.find();
+    const product = await UserModel.find();
     res.send({ data: product });
   } catch (error) {
     console.log("error", error);
@@ -110,7 +110,7 @@ VendorRoutes.get("/:id", async (req, res) => {
   const Id = req.params.id;
 
   try {
-    const product = await VendorModel.find({ _id: Id });
+    const product = await UserModel.find({ _id: Id });
     res.send({ data: product });
   } catch (error) {
     console.log("error", error);
@@ -123,12 +123,11 @@ VendorRoutes.get("/:id", async (req, res) => {
 
 VendorRoutes.patch("/update/:id", async (req, res) => {
   const Id = req.params.id;
-  const payload=req.body
- 
- try {
-      await VendorModel.findByIdAndUpdate({ _id: Id }, payload);
-      res.send({ msg: "updated Sucessfully" });
-   
+  const payload = req.body;
+
+  try {
+    await UserModel.findByIdAndUpdate({ _id: Id }, payload);
+    res.send({ msg: "updated Sucessfully" });
   } catch (err) {
     console.log(err);
     res.send({ err: "Something went wrong" });
@@ -138,14 +137,12 @@ VendorRoutes.patch("/update/:id", async (req, res) => {
 VendorRoutes.delete("/delete/:id", async (req, res) => {
   const Id = req.params.id;
   try {
-      await HotelModel.findByIdAndDelete({ _id: Id });
-      res.send("Deleted the Hotel Data");
-
+    await HotelModel.findByIdAndDelete({ _id: Id });
+    res.send("Deleted the Hotel Data");
   } catch (err) {
     console.log(err);
     res.send({ msg: "Something went wrong" });
   }
 });
-
 
 module.exports = { VendorRoutes };

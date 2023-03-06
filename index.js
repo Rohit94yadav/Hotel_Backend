@@ -19,6 +19,8 @@ const { hotelDataRoutes } = require("./Routes/HotelData.Routes");
 const fs = require("fs");
 const { parse } = require("path");
 const { BookingRouter } = require("./Routes/Booking.Routes");
+const { record } = require("./middleware/logger.middleware");
+const { authenticate } = require("./middleware/authentication.middleware");
 
 
 require("dotenv").config();
@@ -35,29 +37,23 @@ app.get("/", (req, res) => {
   res.send("Welcome");
 });
 
-function recordMiddleware(req, res, next) {
-  const recordData = req.body; 
-  console.log(`Record data: ${JSON.stringify(recordData)}`);
-  next(); // call the next middleware function in the chain
-}
-
-// Use the recordMiddleware function for all requests
-app.use(recordMiddleware);
 
 
+hotelDataRoutes.use(authenticate);
 
 app.use("/agent", AgentRouter);
-
-
 app.use("/user",UserRouter)
+app.use("/admin",AdminRegisterRoutes)
+app.use("/vendor",VendorRoutes)
 
-// app.use("/allhotel",AllhotelRoutes)
+
+
 
 
 app.use("/hotel",hotelRoutes);
-
 app.use("/nonaproved",AdminApprovedRoutes)
 
+app.use("/package",packageRoutes)
 app.use("/rejectaproved",AdminApprovelRejectedRouter)
 
 app.use("/cart",cartRouter)
@@ -66,11 +62,10 @@ app.use("/touristplace",tourPlaceRoutes)
 
 app.use("/tourtravel",TourTravelRoutes)
 
-app.use("/package",packageRoutes)
 
-app.use("/admin",AdminRegisterRoutes)
 
-app.use("/vendor",VendorRoutes)
+
+
 
 app.use("/allhotel",hotelDataRoutes)
 

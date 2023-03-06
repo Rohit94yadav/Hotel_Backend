@@ -5,7 +5,6 @@ const hotelSchema = mongoose.Schema(
     name: { type: String,  unique: true },
     image_url: [{ type: String, required: true }],
     email: { type: String, required: true },
-    password:{type: String,},
     phone: { type: Number, required: true },
     address: { type: String, required: true },
     city: { type: String, required: true },

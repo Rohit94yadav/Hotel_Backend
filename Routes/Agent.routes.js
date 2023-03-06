@@ -2,18 +2,20 @@ const express = require("express");
 require("dotenv").config();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { UserModel } = require("../Model/User.model");
 
 const saltRounds = +process.env.saltRounds;
 
-const { WenderModel } = require("../Model/Wender.model");
+
 
 const AgentRouter = express.Router();
 
 AgentRouter.post("/register", async (req, res) => {
   const payload = req.body;
+  payload.userType="agent"
 
   try {
-    const email = await WenderModel.findOne({ email: payload.email });
+    const email = await UserModel.findOne({ email: payload.email });
     if (email) {
       res
         .status(200)
@@ -27,7 +29,7 @@ AgentRouter.post("/register", async (req, res) => {
           throw err;
         } else {
           payload.password = hash;
-          const user = new WenderModel(payload);
+          const user = new UserModel(payload);
           await user.save();
           res.status(200).send({
             msg: "Registration Success",
@@ -50,7 +52,7 @@ AgentRouter.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await WenderModel.findOne({ email });
+    const user = await UserModel.findOne({ email });
     if (user) {
       bcrypt.compare(password, user.password, (err, result) => {
         if (err) {
@@ -99,7 +101,7 @@ AgentRouter.get("/", async (req, res) => {
 
 
   try {
-    const product = await WenderModel.find();
+    const product = await UserModel.find();
     res.send({ data: product });
   } catch (error) {
     console.log("error", error);
@@ -114,7 +116,7 @@ AgentRouter.get("/:id", async (req, res) => {
   const Id = req.params.id;
 
   try {
-    const product = await WenderModel.find({ _id: Id });
+    const product = await UserModel.find({ _id: Id });
     res.send({ data: product });
   } catch (error) {
     console.log("error", error);
@@ -130,7 +132,7 @@ AgentRouter.patch("/update/:id", async (req, res) => {
   const payload=req.body
  
  try {
-      await WenderModel.findByIdAndUpdate({ _id: Id }, payload);
+      await UserModel.findByIdAndUpdate({ _id: Id }, payload);
       res.send({ msg: "updated Sucessfully" });
    
   } catch (err) {
@@ -142,7 +144,7 @@ AgentRouter.patch("/update/:id", async (req, res) => {
 AgentRouter.delete("/delete/:id", async (req, res) => {
   const Id = req.params.id;
   try {
-      await WenderModel.findByIdAndDelete({ _id: Id });
+      await UserModel.findByIdAndDelete({ _id: Id });
       res.send("Deleted the Hotel Data");
 
   } catch (err) {
