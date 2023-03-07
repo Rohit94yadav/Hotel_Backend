@@ -98,6 +98,20 @@ packageRoutes.get(
   }
 );
 
+packageRoutes.get(
+  "allpackage/:id",
+ 
+  async (req, res) => {
+    const id = req.params.id;
+    try {
+      const product = await PackageModel.findById(id);
+      res.send(product);
+    } catch (error) {
+      res.status(404).send({ msg: "something went wrong" });
+    }
+  }
+);
+
 packageRoutes.post("/add",authenticate,AutheriseRole, async (req, res) => {
   const payload = req.body;
 
