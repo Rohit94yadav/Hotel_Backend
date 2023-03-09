@@ -21,6 +21,20 @@ TourTravelRoutes.get("/", async (req, res) => {
     });
   }
 });
+TourTravelRoutes.get("/id", async (req, res) => {
+  const payload = req.params;
+  try {
+    const product = await TourModel.find({_id:payload});
+    console.log(product);
+    res.send({ data: product });
+  } catch (error) {
+    console.log("error", error);
+    res.status(500).send({
+      error: true,
+      msg: "something went wrong",
+    });
+  }
+});
 
 TourTravelRoutes.get("/alltraveldata", async (req, res) => {
   const payload = req.body;
