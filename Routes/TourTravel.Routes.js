@@ -23,7 +23,7 @@ TourTravelRoutes.get("/", async (req, res) => {
 });
 
 
-hotelDataRoutes.get(
+TourTravelRoutes.get(
   "/alltraveldata",
   async (req, res) => {
     const sort = req.query.sort;
@@ -95,7 +95,7 @@ hotelDataRoutes.get(
   }
 );
 
-hotelDataRoutes.get(
+TourTravelRoutes.get(
   "alltraveldata/:id",
   async (req, res) => {
     const id = req.params.id;
