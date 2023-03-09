@@ -39,7 +39,7 @@ app.get("/", (req, res) => {
 
 
 
-hotelDataRoutes.use(authenticate);
+// hotelDataRoutes.use(authenticate);
 
 app.use("/agent", AgentRouter);
 app.use("/user",UserRouter)

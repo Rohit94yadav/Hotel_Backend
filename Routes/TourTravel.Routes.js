@@ -5,7 +5,7 @@ const { authenticate } = require("../middleware/authentication.middleware");
 
 const { TourModel } = require("../Model/TourTravel.Model");
 
-TourTravelRoutes.use(authenticate);
+// TourTravelRoutes.use(authenticate);
 
 TourTravelRoutes.get("/", async (req, res) => {
   const payload = req.body;
