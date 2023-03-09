@@ -96,7 +96,7 @@ TourTravelRoutes.get(
 );
 
 TourTravelRoutes.get(
-  "/:id",
+  "/alltraveldata/:id",
   async (req, res) => {
     const Id = req.params.id;
     try {
