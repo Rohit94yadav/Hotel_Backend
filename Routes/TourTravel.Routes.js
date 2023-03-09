@@ -21,35 +21,97 @@ TourTravelRoutes.get("/", async (req, res) => {
     });
   }
 });
-TourTravelRoutes.get("/id", async (req, res) => {
-  const payload = req.params;
-  try {
-    const product = await TourModel.find({_id:payload});
-    console.log(product);
-    res.send({ data: product });
-  } catch (error) {
-    console.log("error", error);
-    res.status(500).send({
-      error: true,
-      msg: "something went wrong",
-    });
-  }
-});
 
-TourTravelRoutes.get("/alltraveldata", async (req, res) => {
-  const payload = req.body;
-  try {
-    const product = await TourModel.find();
-    // console.log(product);
-    res.send({ data: product });
-  } catch (error) {
-    console.log("error", error);
-    res.status(500).send({
-      error: true,
-      msg: "something went wrong",
-    });
+
+TourTravelRoutes.get(
+  "/alltravels",
+  record,
+  authenticate,
+  User_admin_vendor,
+  async (req, res) => {
+    const sort = req.query.sort;
+    const filter = req.query.filter || "";
+    const city = req.query.city || "";
+    const rating = +req.query.rating || 0;
+   
+
+    let sortBy;
+    if (sort == "low") {
+      sortBy = { rating: 1 };
+    } else if (sort == "high") {
+      sortBy = { rating: -1 };
+    } else if (sort == "phigh") {
+      sortBy = { priceperNight: -1 };
+    } else if (sort == "plow") {
+      sortBy = { priceperNight: 1 };
+    } else {
+      sortBy = { _id: 1 };
+    }
+    const data = await TourModel.find();
+    console.log(data.isApprovedByAdmin);
+
+    if (data.length > 0) {
+      try {
+        if (filter.length > 0) {
+          const products = await TourModel.find()
+            .where("rating")
+            .gte(rating)
+            .sort(sortBy)
+            .where("name")
+            .in(filter)
+            .where("city")
+            .in(city);
+          const count = await TourModel.find()
+            .where("rating")
+            .gte(rating)
+            .sort(sortBy)
+            .where("priceperNight")
+            .gte(rating)
+            .sort(sortBy)
+            .where("name")
+            .in(filter)
+            .where("city")
+            .in(city)
+            .count();
+
+          res.send({ data: products, total: count });
+        } else {
+          const count = await TourModel.find()
+            .where("rating")
+            .gte(rating)
+            .sort(sortBy)
+
+            .count();
+          const products = await TourModel.find()
+            .where("rating")
+            .gte(rating)
+            .sort(sortBy);
+
+          res.send({ data: products, total: count });
+        }
+      } catch (err) {
+        res.send({ msg: "Could not get Hotel" });
+      }
+    } else {
+      res.send({ msg: "Hotel Empty" });
+    }
   }
-});
+);
+
+TourTravelRoutes.get(
+  "/:id",
+  authenticate,
+  User_admin_vendor,
+  async (req, res) => {
+    const id = req.params.id;
+    try {
+      const product = await TourModel.findById(id);
+      res.send(product);
+    } catch (error) {
+      res.status(404).send({ msg: "something went wrong" });
+    }
+  }
+);
 
 TourTravelRoutes.post("/add", async (req, res) => {
   const payload = req.body;
