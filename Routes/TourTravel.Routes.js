@@ -25,7 +25,7 @@ TourTravelRoutes.get("/", async (req, res) => {
 TourTravelRoutes.get("/alltraveldata", async (req, res) => {
   const payload = req.body;
   try {
-    const product = await TourModel.find();
+    const product = await TourModel.find({rating:5});
     // console.log(product);
     res.send({ data: product });
   } catch (error) {
