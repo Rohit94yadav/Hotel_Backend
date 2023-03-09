@@ -100,7 +100,7 @@ TourTravelRoutes.get(
   async (req, res) => {
     const id = req.params.id;
     try {
-      const product = await TourModel.findById({_id:id});
+      const product = await TourModel.findById(id);
       res.send(product);
     } catch (error) {
       res.status(404).send({ msg: "something went wrong" });
