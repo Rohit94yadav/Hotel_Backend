@@ -96,11 +96,11 @@ TourTravelRoutes.get(
 );
 
 TourTravelRoutes.get(
-  "alltraveldata/:id",
+  "/:id",
   async (req, res) => {
-    const id = req.params.id;
+    const Id = req.params.id;
     try {
-      const product = await TourModel.findById(id);
+      const product = await TourModel.findOne({ _id: Id });
       res.send(product);
     } catch (error) {
       res.status(404).send({ msg: "something went wrong" });
