@@ -21,7 +21,7 @@ const TourTravelSchema = mongoose.Schema(
     ],
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "agent",
+      ref: "admin",
       required: true,
     },
   },
