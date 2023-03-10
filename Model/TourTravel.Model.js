@@ -10,6 +10,7 @@ const TourTravelSchema = mongoose.Schema({
     pinCode:{ type: Number, required: true},
     rating:{ type: Number, required: true},
     facilites:{ type: String, required: true},
+    description:{ type: String, required: true},
     package:[
       {
         Typevehicle:{ type: String, required: true},
