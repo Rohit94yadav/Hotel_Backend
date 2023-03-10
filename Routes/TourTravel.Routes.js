@@ -94,12 +94,22 @@ TourTravelRoutes.get("/alltraveldata/:id", async (req, res) => {
 
 TourTravelRoutes.post("/add", async (req, res) => {
   const payload = req.body;
+
   try {
+    const title = await TourModel.findOne({ name: payload.name });
+    if (title) {
+      res
+        .status(200)
+        .send({
+          msg: "This Hotel is allready Present So please change the Name of Hotel",
+          error: true,
+        });
+    } else {
       const hotel = new TourModel(payload);
       await hotel.save();
-      res.send({ msg: "Travel Data is created" });
-  } 
-  catch (error) {
+      res.send({ msg: "Hotel Data is created" });
+    }
+  } catch (error) {
     res.status(400).send({ msg: "something went wrong", error });
     console.log(error);
   }
