@@ -5,7 +5,7 @@ const { authenticate } = require("../middleware/authentication.middleware");
 
 const { TourModel } = require("../Model/TourTravel.Model");
 
-// TourTravelRoutes.use(authenticate);
+ TourTravelRoutes.use(authenticate);
 
 TourTravelRoutes.get("/", async (req, res) => {
   const payload = req.body;
@@ -22,108 +22,84 @@ TourTravelRoutes.get("/", async (req, res) => {
   }
 });
 
+TourTravelRoutes.get("/alltraveldata", async (req, res) => {
+  const sort = req.query.sort;
+  const filter = req.query.filter || "";
+  const City = req.query.city || "";
+  const rating = +req.query.rating || 0;
 
-TourTravelRoutes.get(
-  "/alltraveldata",
-  async (req, res) => {
-    const sort = req.query.sort;
-    const filter = req.query.filter || "";
-    const city = req.query.city || "";
-    const rating = +req.query.rating || 0;
-   
-
-    let sortBy;
-    if (sort == "low") {
-      sortBy = { rating: 1 };
-    } else if (sort == "high") {
-      sortBy = { rating: -1 };
-    } else if (sort == "phigh") {
-      sortBy = { priceperNight: -1 };
-    } else if (sort == "plow") {
-      sortBy = { priceperNight: 1 };
-    } else {
-      sortBy = { _id: 1 };
-    }
-    const data = await TourModel.find();
-    
-
-    if (data.length > 0) {
-      try {
-        if (filter.length > 0) {
-          const products = await TourModel.find()
-            .where("rating")
-            .gte(rating)
-            .sort(sortBy)
-            .where("name")
-            .in(filter)
-            .where("city")
-            .in(city);
-          const count = await TourModel.find()
-            .where("rating")
-            .gte(rating)
-            .sort(sortBy)
-            .where("priceperNight")
-            .gte(rating)
-            .sort(sortBy)
-            .where("name")
-            .in(filter)
-            .where("city")
-            .in(city)
-            .count();
-
-          res.send({ data: products, total: count });
-        } else {
-          const count = await TourModel.find()
-            .where("rating")
-            .gte(rating)
-            .sort(sortBy)
-
-            .count();
-          const products = await TourModel.find()
-            .where("rating")
-            .gte(rating)
-            .sort(sortBy);
-
-          res.send({ data: products, total: count });
-        }
-      } catch (err) {
-        res.send({ msg: "Could not get Hotel" });
-      }
-    } else {
-      res.send({ msg: "Hotel Empty" });
-    }
+  let sortBy;
+  if (sort == "low") {
+    sortBy = { rating: 1 };
+  } else if (sort == "high") {
+    sortBy = { rating: -1 };
+  } else {
+    sortBy = { _id: 1 };
   }
-);
+  const data = await TourModel.find();
 
-TourTravelRoutes.get(
-  "/alltraveldata/:id",
-  async (req, res) => {
-    const Id = req.params.id;
+  if (data.length > 0) {
     try {
-      const product = await TourModel.findOne({ _id: Id });
-      res.send(product);
-    } catch (error) {
-      res.status(404).send({ msg: "something went wrong" });
+      if (filter.length > 0) {
+        const products = await products
+          .find()
+          .where("rating")
+          .gte(rating)
+          .sort(sortBy);
+        const count = await TourModel.find()
+          .where("rating")
+          .gte(rating)
+          .sort(sortBy)
+          .count();
+        res.send({ data: products, total: count });
+      } else if (req.query.city) {
+        const products = await TourModel.find({
+          city: { $regex: req.query.city, $options: "i" }
+        });
+        const count = await TourModel.find({
+          city: { $regex: req.query.city, $options: "i" }
+        }).count();
+        res.send({ data: products, total: count });
+      } else {
+        const count = await TourModel.find()
+          .where("rating")
+          .gte(rating)
+          .sort(sortBy)
+
+          .count();
+        const products = await TourModel.find()
+          .where("rating")
+          .gte(rating)
+          .sort(sortBy);
+
+        res.send({ data: products, total: count });
+      }
+    } catch (err) {
+      res.send({ msg: "Could not get Hotel" });
     }
+  } else {
+    res.send({ msg: "Hotel Empty" });
   }
-);
+});
+
+TourTravelRoutes.get("/alltraveldata/:id", async (req, res) => {
+  const Id = req.params.id;
+  try {
+    const product = await TourModel.findOne({ _id: Id });
+    res.send(product);
+  } catch (error) {
+    res.status(404).send({ msg: "something went wrong" });
+  }
+});
 
 TourTravelRoutes.post("/add", async (req, res) => {
   const payload = req.body;
-
   try {
-    const title = await TourModel.findOne({ companyName: payload.companyName });
-    if (title) {
-      res.status(200).send({
-        msg: "This Hotel is allready Present So please change the Name of Hotel",
-        error: true,
-      });
-    } else {
       const hotel = new TourModel(payload);
       await hotel.save();
       res.send({ msg: "Travel Data is created" });
-    }
-  } catch (error) {
+  } 
+  catch (error) {
     res.status(400).send({ msg: "something went wrong", error });
     console.log(error);
   }

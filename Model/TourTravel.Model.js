@@ -1,37 +1,39 @@
-const {mongoose} = require("mongoose");
+const { mongoose } = require("mongoose");
 
-const TourTravelSchema = mongoose.Schema({
-    companyName: { type: String, required: true, unique: true },
-    image_url: [{ type: String, required: true }],
-    email: { type: String, required: true},
-    contact:{ type: Number, required: true},
-    address:{ type: String, required: true},
-    city:{ type: String, required: true},
-    pinCode:{ type: Number, required: true},
-    rating:{ type: Number, required: true},
-    facilites:{ type: String, required: true},
-    description:{ type: String, required: true},
-    package:[
+const TourTravelSchema = mongoose.Schema(
+  {
+    
+    name: { type: String },
+    image_url: [{ type: String }],
+    contact: { type: Number },
+    city: { type: String },
+    pinCode: { type: Number },
+    rating: { type: Number },
+    facilites: [{ type: String }],
+    description: { type: String },
+    price: { type: Number },
+    allTypes: [
       {
-        Typevehicle:{ type: String, required: true},
-        person:{ type: Number, required: true},
-        price:{ type: Number, required: true},
-      }
+        Typevehicle: { type: String },
+        person: { type: Number },
+        price: { type: Number },
+        img: { type: String },
+      },
     ],
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "wender",
+      ref: "agent",
       required: true,
-    }
+    },
   },
   {
     versionKey: false,
-    timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+    timestamps: { createdAt: "created_at", updatedAt: "updated_at" },
   }
-  );
-  
-  const TourModel = mongoose.model("tourtravel_data", TourTravelSchema);
+);
 
-  module.exports = {
-    TourModel,
-  };
+const TourModel = mongoose.model("tourtravel_data", TourTravelSchema);
+
+module.exports = {
+  TourModel,
+};
