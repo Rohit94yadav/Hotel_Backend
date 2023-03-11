@@ -18,6 +18,13 @@ const {
 
 
 
+hotelDataRoutes.get("/off", async (req, res) => {
+  const sort = { length: -1 };
+  const abc= await HotelDataModel.find({alltypes: {$elemMatch: {off:{ $lt : 50}}}}).sort(sort)
+  console.log(abc)
+ res.send(abc)
+});
+
 hotelDataRoutes.get(
   "/",
   record,
