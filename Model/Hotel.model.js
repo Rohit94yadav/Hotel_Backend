@@ -21,9 +21,9 @@ const hotelSchema = mongoose.Schema(
         price:{ type: Number, required: true},
       }
     ],
-    userId: {
+    AgentId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "wender",
+      ref: "agent",
       required: true
     }
   },
@@ -33,7 +33,7 @@ const hotelSchema = mongoose.Schema(
   }
   );
   
-  const HotelModel = mongoose.model("hotel_data", hotelSchema);
+  const HotelModel = mongoose.model("Agent_Hotels", hotelSchema);
 
   module.exports = {
     HotelModel,

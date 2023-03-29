@@ -2,10 +2,11 @@ const express = require("express");
 require("dotenv").config();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { VendorModel } = require("../Model/Vendor.Model");
 
 const saltRounds = +process.env.saltRounds;
 
-const { UserModel } = require("../Model/User.model");
+
 
 const VendorRoutes = express.Router();
 
@@ -14,7 +15,7 @@ VendorRoutes.post("/register", async (req, res) => {
   payload.userType="vendor"
 
   try {
-    const email = await UserModel.findOne({ email: payload.email });
+    const email = await VendorModel.findOne({ email: payload.email });
     if (email) {
       res.status(200).send({
         msg: "Email is already Present Please try to again Email",
@@ -26,7 +27,7 @@ VendorRoutes.post("/register", async (req, res) => {
           throw err;
         } else {
           payload.password = hash;
-          const user = new UserModel(payload);
+          const user = new VendorModel(payload);
           await user.save();
           res.status(200).send({
             msg: "Registration Success",
@@ -49,7 +50,7 @@ VendorRoutes.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await UserModel.findOne({ email });
+    const user = await VendorModel.findOne({ email });
     if (user) {
       bcrypt.compare(password, user.password, (err, result) => {
         if (err) {
@@ -58,7 +59,7 @@ VendorRoutes.post("/login", async (req, res) => {
           if (result) {
             jwt.sign(
               {
-                userId: user._id,
+                vendorId: user._id,
                 name: user.name,
                 email: user.email,
                 userType: user.userType,
@@ -96,7 +97,7 @@ VendorRoutes.post("/login", async (req, res) => {
 
 VendorRoutes.get("/", async (req, res) => {
   try {
-    const product = await UserModel.find();
+    const product = await VendorModel.find();
     res.send({ data: product });
   } catch (error) {
     console.log("error", error);
@@ -110,7 +111,7 @@ VendorRoutes.get("/:id", async (req, res) => {
   const Id = req.params.id;
 
   try {
-    const product = await UserModel.find({ _id: Id });
+    const product = await VendorModel.find({ _id: Id });
     res.send({ data: product });
   } catch (error) {
     console.log("error", error);
@@ -126,7 +127,7 @@ VendorRoutes.patch("/update/:id", async (req, res) => {
   const payload = req.body;
 
   try {
-    await UserModel.findByIdAndUpdate({ _id: Id }, payload);
+    await VendorModel.findByIdAndUpdate({ _id: Id }, payload);
     res.send({ msg: "updated Sucessfully" });
   } catch (err) {
     console.log(err);

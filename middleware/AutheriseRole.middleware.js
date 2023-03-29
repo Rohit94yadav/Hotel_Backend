@@ -17,10 +17,6 @@ const AutheriseRole = async ( req, res, next) => {
 };
 
 
-
-
-
-
 const AutheriseRoleUser = async ( req, res, next) => {
     const user=await UserModel.findById(req.body.userId);
  // console.log(user.userType=="admin")

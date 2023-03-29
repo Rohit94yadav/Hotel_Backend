@@ -2,7 +2,7 @@ const express = require("express");
 require("dotenv").config();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { UserModel } = require("../Model/User.model");
+const { AgentModel } = require("../Model/Agent.Model");
 
 const saltRounds = +process.env.saltRounds;
 
@@ -15,7 +15,7 @@ AgentRouter.post("/register", async (req, res) => {
   payload.userType="agent"
 
   try {
-    const email = await UserModel.findOne({ email: payload.email });
+    const email = await AgentModel.findOne({ email: payload.email });
     if (email) {
       res
         .status(200)
@@ -29,7 +29,7 @@ AgentRouter.post("/register", async (req, res) => {
           throw err;
         } else {
           payload.password = hash;
-          const user = new UserModel(payload);
+          const user = new AgentModel(payload);
           await user.save();
           res.status(200).send({
             msg: "Registration Success",
@@ -52,7 +52,7 @@ AgentRouter.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await UserModel.findOne({ email });
+    const user = await AgentModel.findOne({ email });
     if (user) {
       bcrypt.compare(password, user.password, (err, result) => {
         if (err) {
@@ -61,7 +61,7 @@ AgentRouter.post("/login", async (req, res) => {
           if (result) {
             jwt.sign(
               {
-                userId: user._id,
+                AgentId: user._id,
                 name: user.name,
                 email: user.email,
                 userType: user.userType,
@@ -101,7 +101,7 @@ AgentRouter.get("/", async (req, res) => {
 
 
   try {
-    const product = await UserModel.find();
+    const product = await AgentModel.find();
     res.send({ data: product });
   } catch (error) {
     console.log("error", error);
@@ -116,7 +116,7 @@ AgentRouter.get("/:id", async (req, res) => {
   const Id = req.params.id;
 
   try {
-    const product = await UserModel.find({ _id: Id });
+    const product = await AgentModel.find({ _id: Id });
     res.send({ data: product });
   } catch (error) {
     console.log("error", error);
@@ -132,7 +132,7 @@ AgentRouter.patch("/update/:id", async (req, res) => {
   const payload=req.body
  
  try {
-      await UserModel.findByIdAndUpdate({ _id: Id }, payload);
+      await AgentModel.findByIdAndUpdate({ _id: Id }, payload);
       res.send({ msg: "updated Sucessfully" });
    
   } catch (err) {
@@ -144,7 +144,7 @@ AgentRouter.patch("/update/:id", async (req, res) => {
 AgentRouter.delete("/delete/:id", async (req, res) => {
   const Id = req.params.id;
   try {
-      await UserModel.findByIdAndDelete({ _id: Id });
+      await AgentModel.findByIdAndDelete({ _id: Id });
       res.send("Deleted the Hotel Data");
 
   } catch (err) {

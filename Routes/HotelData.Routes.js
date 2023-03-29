@@ -8,13 +8,6 @@ const { HotelDataModel } = require("../Model/HotelData.Model");
 require("dotenv").config();
 
 const { authenticate } = require("../middleware/authentication.middleware");
-const { record } = require("../middleware/logger.middleware");
-const {
-  AutheriseRole,
-  AutheriseRolevendor,
-  User_admin_vendor
-
-} = require("../middleware/AutheriseRole.middleware");
 
 
 
@@ -27,15 +20,12 @@ hotelDataRoutes.get("/off", async (req, res) => {
 
 hotelDataRoutes.get(
   "/",
-  record,
   authenticate,
-  User_admin_vendor,
   async (req, res) => {
     const sort = req.query.sort;
     const filter = req.query.filter || "";
     const city = req.query.city || "";
     const rating = +req.query.rating || 0;
-   
 
     let sortBy;
     if (sort == "low") {
@@ -102,8 +92,6 @@ hotelDataRoutes.get(
 
 hotelDataRoutes.get(
   "/:id",
-  authenticate,
-  User_admin_vendor,
   async (req, res) => {
     const id = req.params.id;
     try {
@@ -117,10 +105,7 @@ hotelDataRoutes.get(
 
 hotelDataRoutes.patch(
   "/update/offer/:id",
-  authenticate,
-  record,
-  AutheriseRole,
-  async (req, res) => {
+   async (req, res) => {
     const Id = req.params.id;
 
     try {
@@ -141,91 +126,129 @@ hotelDataRoutes.patch(
 
 // %%%%%%%%%%%%%%%%%%%%  (vendor See his data)  %%%%%%%%%%%%%%%%%%%%%%%
 
-hotelDataRoutes.get("/all/:id", authenticate,AutheriseRolevendor, async (req, res) => {
-  const Id = req.params.id;
-  console.log(typeof payload);
+hotelDataRoutes.get(
+  "/all/:id",
+    async (req, res) => {
+    const Id = req.params.id;
+    console.log(typeof payload);
 
-  try {
-    const product = await HotelDataModel.find({ userId: Id });
-    console.log(product);
-    res.send({ data: product });
-  } catch (error) {
-    console.log("error", error);
-    res.status(500).send({
-      error: true,
-      msg: "something went wrong",
-    });
+    try {
+      const product = await HotelDataModel.find({ userId: Id });
+      console.log(product);
+      res.send({ data: product });
+    } catch (error) {
+      console.log("error", error);
+      res.status(500).send({
+        error: true,
+        msg: "something went wrong",
+      });
+    }
   }
-});
+);
 
-hotelDataRoutes.post("/add",authenticate,AutheriseRolevendor, async (req, res) => {
-  const payload = req.body;
-  const data = await HotelModel.find({ _id: payload.hotelId });
-  try {
-    const cart = await HotelDataModel.create({
-      hotelId: payload.hotelId,
-      name: data[0].name,
-      image_url: data[0].image_url,
-      email: data[0].email,
-      quantity: data[0].quantity,
-      phone: data[0].phone,
-      address: data[0].address,
-      city: data[0].city,
-      pinCode: data[0].pinCode,
-      rating: data[0].rating,
-      ownerName: data[0].ownerName,
-      contactName: data[0].contactName,
-      date: payload.date,
-      alltypes: [
-        {
-          type: payload.type,
-          numberofitem: payload.numberofitem,
-          price: payload.price,
-          facilites: payload.facilites,
-          availableitem: payload.availableitem,
-          discountprice: payload.discountprice,
-          description: payload.description,
-          off: 0,
-        },
-      ],
-    });
+hotelDataRoutes.post(
+  "/add",
+  authenticate,
+   async (req, res) => {
+    const payload = req.body;
+    const data = await HotelModel.find({ _id: payload.hotelId });
+    try {
+      const cart = await HotelDataModel.create({
+        hotelId: payload.hotelId,
+        name: data[0].name,
+        image_url: data[0].image_url,
+        email: data[0].email,
+        quantity: data[0].quantity,
+        phone: data[0].phone,
+        address: data[0].address,
+        city: data[0].city,
+        pinCode: data[0].pinCode,
+        rating: data[0].rating,
+        review: payload.review,
+        ownerName: data[0].ownerName,
+        contactName: data[0].contactName,
+        date: payload.date,
+        alltypes: [
+          {
+            type: payload.type,
+            numberofitem: payload.numberofitem,
+            price: payload.price,
+            facilites: payload.facilites,
+            availableitem: payload.availableitem,
+            discountprice: payload.discountprice,
+            description: payload.description,
+            off: 0,
+          },
+        ],
+      });
 
-    return res.status(201).send(cart);
-  } catch (e) {
-    res.status(500).send(e.message);
+      return res.status(201).send(cart);
+    } catch (e) {
+      res.status(500).send(e.message);
+    }
   }
-});
+);
 
-hotelDataRoutes.patch("/update/:id",record, authenticate,AutheriseRolevendor, async (req, res) => {
+hotelDataRoutes.patch(
+  "/update/:id",
+  authenticate,
+  async (req, res) => {
+    const Id = req.params.id;
+    const payload = req.body;
+
+    try {
+      await HotelDataModel.findByIdAndUpdate({ _id: Id }, payload);
+      res.send({ msg: "updated Sucessfully" });
+    } catch (err) {
+      console.log(err);
+      res.send({ err: "Something went wrong" });
+    }
+  }
+);
+
+hotelDataRoutes.delete(
+  "/delete/:id",
+  authenticate,
+  async (req, res) => {
+    const Id = req.params.id;
+    const note = await HotelDataModel.findOne({ _id: Id });
+    const hotelId = note.created_by;
+    const userId_making_req = req.body.created_by;
+    try {
+      if (userId_making_req !== hotelId) {
+        res.send({ msg: "You are not Recognized" });
+      } else {
+        await HotelDataModel.findByIdAndDelete({ _id: Id });
+        res.send("Deleted the Hotel Data");
+      }
+    } catch (err) {
+      console.log(err);
+      res.send({ msg: "Something went wrong" });
+    }
+  }
+);
+
+hotelDataRoutes.post("/review_rating/:id", async (req, res) => {
   const Id = req.params.id;
   const payload = req.body;
+  // console.log(payload)
 
   try {
-    await HotelDataModel.findByIdAndUpdate({ _id: Id }, payload);
-    res.send({ msg: "updated Sucessfully" });
+    const data = await HotelDataModel.findById(Id);
+
+    data.rating.forEach((item) => {
+      item.rating = payload.rating;
+      console.log(item);
+    });
+    await data.save();
+    res.send(data);
   } catch (err) {
     console.log(err);
     res.send({ err: "Something went wrong" });
   }
 });
 
-hotelDataRoutes.delete("/delete/:id",authenticate,AutheriseRolevendor, async (req, res) => {
-  const Id = req.params.id;
-  const note = await HotelDataModel.findOne({ _id: Id });
-  const hotelId = note.created_by;
-  const userId_making_req = req.body.created_by;
-  try {
-    if (userId_making_req !== hotelId) {
-      res.send({ msg: "You are not Recognized" });
-    } else {
-      await HotelDataModel.findByIdAndDelete({ _id: Id });
-      res.send("Deleted the Hotel Data");
-    }
-  } catch (err) {
-    console.log(err);
-    res.send({ msg: "Something went wrong" });
-  }
-});
+
 
 module.exports = {
   hotelDataRoutes,

@@ -1,12 +1,12 @@
 const express = require("express");
+const { authenticateAgent } = require("../middleware/authenticate.Agent");
 const hotelRoutes = express.Router();
 
-const { authenticate } = require("../middleware/authentication.middleware");
+
 const { HotelModel } = require("../Model/Hotel.model");
 
-hotelRoutes.use(authenticate);
 
-hotelRoutes.get("/", async (req, res) => {
+hotelRoutes.get("/",authenticateAgent, async (req, res) => {
   const payload = req.body;
   try {
     const product = await HotelModel.find({ userId: payload.userId });
@@ -21,7 +21,7 @@ hotelRoutes.get("/", async (req, res) => {
   }
 });
 
-hotelRoutes.get("/:id", async (req, res) => {
+hotelRoutes.get("/:id",authenticateAgent, async (req, res) => {
   const id = req.params.id;
   try {
     const product = await HotelModel.findById(id);
@@ -31,9 +31,8 @@ hotelRoutes.get("/:id", async (req, res) => {
   }
 });
 
-hotelRoutes.post("/add", async (req, res) => {
+hotelRoutes.post("/add",authenticateAgent, async (req, res) => {
   const payload = req.body;
-
   try {
     const title = await HotelModel.findOne({ name: payload.name });
     if (title) {
@@ -54,7 +53,7 @@ hotelRoutes.post("/add", async (req, res) => {
   }
 });
 
-hotelRoutes.patch("/update/:id", async (req, res) => {
+hotelRoutes.patch("/update/:id",authenticateAgent, async (req, res) => {
   const Id = req.params.id;
   const payload = req.body;
 
@@ -76,7 +75,7 @@ hotelRoutes.patch("/update/:id", async (req, res) => {
   }
 });
 
-hotelRoutes.delete("/delete/:id", async (req, res) => {
+hotelRoutes.delete("/delete/:id",authenticateAgent, async (req, res) => {
   const Id = req.params.id;
   const note = await HotelModel.findOne({ _id: Id });
   const hotelId = note.created_by;

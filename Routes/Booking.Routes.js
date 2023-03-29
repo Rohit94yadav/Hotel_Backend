@@ -20,7 +20,6 @@ BookingRouter.get("/", authenticate, async (req, res) => {
     });
   }
 });
-
 BookingRouter.get("/allbooking", authenticate, async (req, res) => {
   const payload = req.body;
 

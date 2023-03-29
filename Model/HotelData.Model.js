@@ -10,7 +10,8 @@ const hotelDataSchema = mongoose.Schema(
     address: { type: String,  },
     city: { type: String,  },
     pinCode: { type: Number,  },
-    rating: { type: Number,  },
+    rating: [{type: Number  }],
+    review:[{ type: String,  }],
     ownerName: { type: String,  },
     contactName: { type: String },
     date:{type: String},
@@ -39,7 +40,7 @@ const hotelDataSchema = mongoose.Schema(
   }
   );
   
-  const HotelDataModel = mongoose.model("data", hotelDataSchema);
+ const HotelDataModel = mongoose.model("data", hotelDataSchema);
 
   module.exports = {
     HotelDataModel,

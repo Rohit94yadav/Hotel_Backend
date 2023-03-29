@@ -2,6 +2,7 @@ const { mongoose } = require("mongoose");
 
 const TourTravelSchema = mongoose.Schema(
   {
+    
     name: { type: String },
     image_url: [{ type: String }],
     contact: { type: Number },
@@ -21,7 +22,7 @@ const TourTravelSchema = mongoose.Schema(
     ],
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "admin",
+      ref: "agent",
       required: true,
     },
   },
