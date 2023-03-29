@@ -8,6 +8,7 @@ const { HotelDataModel } = require("../Model/HotelData.Model");
 require("dotenv").config();
 
 const { authenticate } = require("../middleware/authentication.middleware");
+const { authenticateAdmin } = require("../middleware/authenticate.Admin");
 
 
 
@@ -148,7 +149,7 @@ hotelDataRoutes.get(
 
 hotelDataRoutes.post(
   "/add",
-  authenticate,
+  authenticateAdmin,
    async (req, res) => {
     const payload = req.body;
     const data = await HotelModel.find({ _id: payload.hotelId });
@@ -164,22 +165,11 @@ hotelDataRoutes.post(
         city: data[0].city,
         pinCode: data[0].pinCode,
         rating: data[0].rating,
-        review: payload.review,
         ownerName: data[0].ownerName,
         contactName: data[0].contactName,
-        date: payload.date,
-        alltypes: [
-          {
-            type: payload.type,
-            numberofitem: payload.numberofitem,
-            price: payload.price,
-            facilites: payload.facilites,
-            availableitem: payload.availableitem,
-            discountprice: payload.discountprice,
-            description: payload.description,
-            off: 0,
-          },
-        ],
+        AdminId:req.body.AdminId,
+        AgentId:data[0].AgentId,
+        vendorId:data[0].vendorId, 
       });
 
       return res.status(201).send(cart);

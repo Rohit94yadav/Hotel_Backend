@@ -2,7 +2,6 @@ const { mongoose } = require("mongoose");
 
 const hotelDataSchema = mongoose.Schema(
   {
-    hotelId:{ type: String,  },
     name: { type: String,},
     image_url: [{ type: String, }],
     email: { type: String,  },
@@ -14,24 +13,39 @@ const hotelDataSchema = mongoose.Schema(
     review:[{ type: String,  }],
     ownerName: { type: String,  },
     contactName: { type: String },
-    date:{type: String},
+    date:{type: String,default:new Date()},
     alltypes:[
       {
-        type:{ type: String, },
-        numberofitem:{ type: Number, },
-        price:{ type: Number, },
-        facilites:{ type: String, },
-        availableitem:{ type: Number, },
-        discountprice:{ type: Number, },
-        description:{type:String},
-        off:{ type: Number, },
+        type:{ type: String,default:"basic" },
+        numberofitem:{ type: Number,default:0 },
+        price:{ type: Number,default:0 },
+        facilites:{ type: String,default:"basic" },
+        availableitem:{ type: Number,default:0 },
+        discountprice:{ type: Number,default:0 },
+        description:{type:String,default:"basic"},
+        off:{ type: Number,default:0 },
 
       }
     ],
+    AdminId:{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "admin",
+    },
+    hotelId:{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "hotel",
+    },
+    AgentId:{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "agent",
+    },
+    vendorId:{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "vendor",
+    },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "vendor",
-      
     }
   },
   {
