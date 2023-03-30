@@ -20,6 +20,7 @@ const { VendorRoutes } = require("./Routes/Vendor.Routes");
 const { hotelDataRoutes } = require("./Routes/HotelData.Routes");
 const { BookingRouter } = require("./Routes/Booking.Routes");
 const { authenticate } = require("./middleware/authentication.middleware");
+const { CommentRoutes } = require("./Routes/Comment.routes");
 // const { CommentRoutes } = require("./Routes/comment.routes");
 
 require("dotenv").config();
@@ -60,7 +61,7 @@ app.use("/allhotel", hotelDataRoutes);
 
 app.use("/book", BookingRouter);
 
-// app.use("/comment",CommentRoutes);
+app.use("/comment",CommentRoutes);
 
 // app.use("/val",AllhotelRoutes)
 

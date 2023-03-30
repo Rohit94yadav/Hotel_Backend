@@ -6,7 +6,6 @@ const authenticateAdmin = (req, res, next) => {
   if (!token) {
     res.send({ msg: "Please login first" });
   }
-  console.log(token);
 
   const decoded = jwt.verify(token, process.env.key);
 
@@ -19,5 +18,5 @@ const authenticateAdmin = (req, res, next) => {
 };
 
 module.exports = {
-    authenticateAdmin
+  authenticateAdmin,
 };
