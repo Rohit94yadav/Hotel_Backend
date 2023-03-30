@@ -7,6 +7,7 @@ rating: { type: String, required: true },
 username:{ type: String, required: true },
 image:{ type: String, required: true },
 date:{ type: String, required: true },
+commentDate:{ type: String, required: true },
 hotelId :{
     type: mongoose.Schema.Types.ObjectId,
     ref: "hotel",

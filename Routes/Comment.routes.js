@@ -46,10 +46,16 @@ CommentRoutes.post("/add", authenticate, async (req, res) => {
   const x = decoded.userId;
   const payload = req.body;
   const data = await UserModel.find({ _id: x });
-  console.log(data[0].name);
-  const hotelData = await HotelDataModel.find({ _id: payload.hotelId });
-  console.log(hotelData);
+
   const date = new Date();
+
+  let d = JSON.stringify(date);
+  let bag = "";
+  for (let i = 1; i <= 10; i++) {
+    bag += d[i];
+  }
+  
+
   const img =
     "https://upload.wikimedia.org/wikipedia/commons/e/e0/Userimage.png";
   try {
@@ -60,9 +66,10 @@ CommentRoutes.post("/add", authenticate, async (req, res) => {
       hotelId: payload.hotelId,
       date: date,
       username: data[0].name,
+      commentDate:bag,
       userId: x,
     });
-    console.log(comments);
+
     return res.status(201).send(comments);
   } catch (e) {
     res.status(500).send(e.message);
@@ -96,7 +103,7 @@ CommentRoutes.patch("/update/:id", authenticate, async (req, res) => {
     if (y !== x) {
       res.send({ msg: "You are not Recognized" });
     } else {
-      await CommentModel.findByIdAndUpdate({_id:Id},req.body);
+      await CommentModel.findByIdAndUpdate({ _id: Id }, req.body);
       res.send({ msg: "update comment" });
     }
   } catch (err) {
@@ -117,7 +124,7 @@ CommentRoutes.patch("/delete/:id", authenticate, async (req, res) => {
     if (y !== x) {
       res.send({ msg: "You are not Recognized" });
     } else {
-      await CommentModel.findOneAndDelete({_id:Id});
+      await CommentModel.findOneAndDelete({ _id: Id });
       res.send({ msg: "update comment" });
     }
   } catch (err) {
