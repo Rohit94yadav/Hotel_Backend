@@ -1,6 +1,5 @@
 const jwt = require("jsonwebtoken");
 
-
 const express = require("express");
 const hotelDataRoutes = express.Router();
 
@@ -12,6 +11,17 @@ require("dotenv").config();
 
 const { authenticate } = require("../middleware/authentication.middleware");
 const { authenticateAdmin } = require("../middleware/authenticate.Admin");
+const { authenticateVendor } = require("../middleware/authenticateVendor");
+
+hotelDataRoutes.get("/allhotel", async (req, res) => {
+  try{
+    const abc = await HotelDataModel.find()
+    console.log(abc);
+    res.send({data:abc,total:abc.length});
+  } catch (error) {
+    res.status(404).send({ msg: "something went wrong" });
+  }
+});
 
 hotelDataRoutes.get("/off", async (req, res) => {
   const sort = { length: -1 };
@@ -21,6 +31,8 @@ hotelDataRoutes.get("/off", async (req, res) => {
   console.log(abc);
   res.send(abc);
 });
+
+
 
 hotelDataRoutes.get("/", authenticate, async (req, res) => {
   const sort = req.query.sort;
@@ -140,11 +152,11 @@ hotelDataRoutes.get("/all/:id", async (req, res) => {
 hotelDataRoutes.post("/add", authenticateAdmin, async (req, res) => {
   const payload = req.body;
   const token = req.headers.authorization;
-  console.log(token);
+
   const decoded = jwt.verify(token, process.env.key);
   // console.log(decoded.AdminId)
   const data = await HotelModel.find({ _id: payload.hotelId });
-  const date=new Date();
+  const date = new Date();
 
   try {
     const cart = await HotelDataModel.create({
@@ -158,12 +170,11 @@ hotelDataRoutes.post("/add", authenticateAdmin, async (req, res) => {
       city: data[0].city,
       ownerName: data[0].ownerName,
       contactName: data[0].contactName,
-      date:date,
-      alltypes:[
-      ],
+      date: date,
+      alltypes: [],
       AdminId: decoded.AdminId,
       AgentId: data[0].AgentId,
-      vendorId:data[0].vendorId
+      vendorId: data[0].vendorId,
     });
 
     return res.status(201).send(cart);
@@ -172,46 +183,22 @@ hotelDataRoutes.post("/add", authenticateAdmin, async (req, res) => {
   }
 });
 
-// hotelDataRoutes.post("/vendoradd", authenticateAdmin, async (req, res) => {
-//   const payload = req.body;
-//   const token = req.headers.authorization;
-//   console.log(token);
-//   const decoded = jwt.verify(token, process.env.key);
-//   // console.log(decoded.AdminId)
-//   const data = await HotelModel.find({ _id: payload.hotelId });
-//   const date=new Date();
-
-//   try {
-//     const cart = await HotelDataModel.create({
-//       hotelId: payload.hotelId,
-//       name: data[0].name,
-//       image_url: data[0].image_url,
-//       email: data[0].email,
-//       quantity: data[0].quantity,
-//       phone: data[0].phone,
-//       address: data[0].address,
-//       city: data[0].city,
-//       ownerName: data[0].ownerName,
-//       contactName: data[0].contactName,
-//       date:date,
-//       alltypes:[
-//       ],
-//       AdminId: decoded.AdminId,
-//       AgentId: data[0].AgentId,
-//     });
-
-//     return res.status(201).send(cart);
-//   } catch (e) {
-//     res.status(500).send(e.message);
-//   }
-// });
-
-hotelDataRoutes.patch("/update/:id", authenticate, async (req, res) => {
+hotelDataRoutes.patch("/update/:id", authenticateVendor, async (req, res) => {
   const Id = req.params.id;
   const payload = req.body;
+  const token = req.headers.authorization;
+
+  const decoded = jwt.verify(token, process.env.key);
+  console.log(decoded.vendorId);
 
   try {
-    await HotelDataModel.findByIdAndUpdate({ _id: Id }, payload);
+    await HotelDataModel.findByIdAndUpdate({ _id: Id }, payload, {
+      vendorId: decoded.vendorId,
+    });
+    await HotelDataModel.findByIdAndUpdate(
+      { _id: Id },
+      { vendorId: decoded.vendorId }
+    );
     res.send({ msg: "updated Sucessfully" });
   } catch (err) {
     console.log(err);
