@@ -79,6 +79,7 @@ if(data.length>0){
 });
 
 
+
 AllhotelRoutes.get("/:id", async (req, res) => {
   const id = req.params.id;
   try {

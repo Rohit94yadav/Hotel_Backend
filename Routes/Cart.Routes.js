@@ -1,19 +1,19 @@
+const jwt = require("jsonwebtoken");
 const express = require("express");
 const { authenticate } = require("../middleware/authentication.middleware");
 
 const { CartModel } = require("../Model/Cart.Model");
-
+const { HotelDataModel } = require("../Model/HotelData.Model");
 
 const cartRouter = express.Router();
 
-
 cartRouter.get("/", authenticate, async (req, res) => {
-  const payload = req.body;
-  // console.log(payload.userId);
+  const token = req.headers.authorization;
+  const decoded = jwt.verify(token, process.env.key);
 
   try {
-    const product = await CartModel.find({ userId: payload});
-   // console.log(product);
+    const product = await CartModel.find({ userId: decoded.userId });
+    // console.log(product);
     res.send({ data: product });
   } catch (error) {
     console.log("error", error);
@@ -25,11 +25,10 @@ cartRouter.get("/", authenticate, async (req, res) => {
 });
 
 cartRouter.post("/add", authenticate, async (req, res) => {
-  const userId = req.body.userId;
+  const token = req.headers.authorization;
+  const decoded = jwt.verify(token, process.env.key);
+  const data = await HotelDataModel.find({ _id: req.body.productId });
   try {
-    const userid = await CartModel.find({ userId:userId });
-    console.log(userid)
-   
     const cart = await CartModel.create({
       name: req.body.name,
       image: req.body.image,
@@ -39,9 +38,10 @@ cartRouter.post("/add", authenticate, async (req, res) => {
       bookingDate: req.body.bookingDate,
       checkoutDate: req.body.checkoutDate,
       numberofPerson: req.body.numberofPerson,
-      userId: userId,
-      productId:req.body.productId,
-      finalPrice:req.body.quantity*req.body.price
+      userId: decoded.userId,
+      productId: req.body.productId,
+      vendorId: data[0].vendorId,
+      finalPrice: req.body.quantity * req.body.price,
     });
     return res.status(201).send(cart);
   } catch (e) {
@@ -49,18 +49,17 @@ cartRouter.post("/add", authenticate, async (req, res) => {
   }
 });
 
-
-cartRouter.patch("/update/:id",authenticate, async (req, res) => {
+cartRouter.patch("/update/:id", authenticate, async (req, res) => {
   const Id = req.params.id;
   const payload = req.body;
- 
+
   const hotel = await CartModel.findOne({ _id: Id });
-  
+
   const hotelId = hotel.userId.toString();
   // console.log(hotelId)
   const userId_making_req = req.body.userId;
 
-  console.log(userId_making_req,hotelId)
+  console.log(userId_making_req, hotelId);
   try {
     if (userId_making_req !== hotelId) {
       res.send({ msg: "You are not authorized" });
@@ -74,17 +73,17 @@ cartRouter.patch("/update/:id",authenticate, async (req, res) => {
   }
 });
 
-cartRouter.delete("/delete/:id",authenticate, async (req, res) => {
+cartRouter.delete("/delete/:id", authenticate, async (req, res) => {
   const Id = req.params.id;
   const payload = req.body;
- 
+
   const hotel = await CartModel.findOne({ _id: Id });
-  
+
   const hotelId = hotel.userId.toString();
   // console.log(hotelId)
   const userId_making_req = req.body.userId;
 
-  console.log(userId_making_req,hotelId)
+  console.log(userId_making_req, hotelId);
   try {
     if (userId_making_req !== hotelId) {
       res.send({ msg: "You are not authorized" });

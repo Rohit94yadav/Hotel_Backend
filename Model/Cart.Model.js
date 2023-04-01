@@ -20,6 +20,11 @@ const cartSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "product",
       required: true,
+    },
+    vendorId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "vendor",
+      required: true,
     }
   },
   {
