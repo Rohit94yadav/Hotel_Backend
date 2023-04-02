@@ -29,8 +29,12 @@ CommentRoutes.get("/hotelcomment/:id", async (req, res) => {
   const payload = req.params.id;
   try {
     const product = await CommentModel.find({ hotelId: payload });
-    console.log(product);
-    res.send({ data: product, total: product.length });
+    let sum = 0;
+    for (let i = 0; i < product.length; i++) {
+      sum += Number(product[i].rating);
+    }
+    let x=(sum / product.length);
+    res.send({ data: product, total: product.length,rating:x });
   } catch (error) {
     console.log("error", error);
     res.status(500).send({
@@ -54,7 +58,6 @@ CommentRoutes.post("/add", authenticate, async (req, res) => {
   for (let i = 1; i <= 10; i++) {
     bag += d[i];
   }
-  
 
   const img =
     "https://upload.wikimedia.org/wikipedia/commons/e/e0/Userimage.png";
@@ -66,7 +69,7 @@ CommentRoutes.post("/add", authenticate, async (req, res) => {
       hotelId: payload.hotelId,
       date: date,
       username: data[0].name,
-      commentDate:bag,
+      commentDate: bag,
       userId: x,
     });
 
