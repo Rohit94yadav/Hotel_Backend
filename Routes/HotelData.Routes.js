@@ -176,7 +176,7 @@ hotelDataRoutes.post("/add", authenticateAdmin, async (req, res) => {
       AgentId: data[0].AgentId,
       vendorId: data[0].vendorId,
     });
-
+    await cart.save()
     return res.status(201).send(cart);
   } catch (e) {
     res.status(500).send(e.message);

@@ -9,6 +9,7 @@ const hotelDataSchema = mongoose.Schema(
     address: { type: String,  },
     city: { type: String,  },
     pinCode: { type: Number,  },
+    rating:{ type: Number, default:0 },
     ownerName: { type: String,  },
     contactName: { type: String },
     date:{type: String,default:new Date()},

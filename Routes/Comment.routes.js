@@ -33,8 +33,10 @@ CommentRoutes.get("/hotelcomment/:id", async (req, res) => {
     for (let i = 0; i < product.length; i++) {
       sum += Number(product[i].rating);
     }
-    let x=(sum / product.length);
-    res.send({ data: product, total: product.length,rating:x });
+    let x = sum / product.length;
+    let val = { rating: x };
+
+    res.send({ data: product, total: product.length, rating: x });
   } catch (error) {
     console.log("error", error);
     res.status(500).send({
@@ -72,7 +74,20 @@ CommentRoutes.post("/add", authenticate, async (req, res) => {
       commentDate: bag,
       userId: x,
     });
+    await comments.save();
+    const product = await CommentModel.find({ hotelId: payload.hotelId });
+    let sum = 0;
+    for (let i = 0; i < product.length; i++) {
+      sum += Number(product[i].rating);
+    }
+    let xx = sum / product.length;
+    let val = { rating: xx };
 
+    const bb = await HotelDataModel.findByIdAndUpdate(
+      { _id: payload.hotelId },
+      val
+    );
+    console.log(bb);
     return res.status(201).send(comments);
   } catch (e) {
     res.status(500).send(e.message);
