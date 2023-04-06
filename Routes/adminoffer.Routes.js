@@ -2,7 +2,7 @@ const express = require("express");
 const adminofferRoutes = express.Router();
 const jwt = require("jsonwebtoken");
 const { authenticateAdmin } = require("../middleware/authenticate.Admin");
-const { OfferAdminModel } = require("../Model/offerforvendor");
+const { OfferAdminModel, OfferVendorModel } = require("../Model/offerforvendor");
 
 // adminofferRoutes.get("/", async (req, res) => {
 //   const token = req.headers.authorization;
@@ -26,7 +26,7 @@ const { OfferAdminModel } = require("../Model/offerforvendor");
 adminofferRoutes.get("/alladminoffer", async (req, res) => {
  
     try {
-      const product = await OfferVendorModel.find();
+      const product = await OfferAdminModel.find();
       console.log(product);
       res.send({ data: product, total: product.length });
     } catch (error) {
