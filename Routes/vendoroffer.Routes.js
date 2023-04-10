@@ -49,6 +49,7 @@ vendorofferRoutes.post("/add", authenticateVendor, async (req, res) => {
   try {
     const comments = await OfferVendorModel.create({
         offer:payload.offer,
+        img:payload.img,
         price:payload.price,
         type:payload.type,
         facilites:payload.facilites,    

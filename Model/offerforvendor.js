@@ -5,6 +5,7 @@ var offerSchema = new Schema(
   {
     offer: { type: Number, required: true },
     price: { type: Number, required: true },
+    img: [{ type: String }],
     type: { type: String, default: "basic" },
     facilites: [{ type: String, default: "basic" }],
     description: [{ type: String, default: "basic" }],

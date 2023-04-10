@@ -51,6 +51,7 @@ adminofferRoutes.post("/add", authenticateAdmin, async (req, res) => {
         offer:payload.offer,
         price:payload.price,
         type:payload.type,
+        img:payload.img,
         facilites:payload.facilites,    
         description:payload.description,
         hotelId :payload.hotelId,

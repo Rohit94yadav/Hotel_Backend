@@ -81,7 +81,7 @@ CommentRoutes.post("/add", authenticate, async (req, res) => {
       sum += Number(product[i].rating);
     }
     let xx = sum / product.length;
-    let val = { rating: xx };
+    let val = { rating: xx,review:product.length};
 
     const bb = await HotelDataModel.findByIdAndUpdate(
       { _id: payload.hotelId },

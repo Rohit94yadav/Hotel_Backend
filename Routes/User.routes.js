@@ -112,4 +112,23 @@ UserRouter.get("/", async (req, res) => {
   }
 });
 
+UserRouter.patch("/update/:id",authenticate, async (req, res) => {
+const Id=req.params.id;
+const payload=req.body
+
+  try {
+    const val=await UserModel.findByIdAndUpdate({_id:Id},payload)
+    res.status(200).send({
+      error: false,
+      msg: "Profile Updated",val
+    });
+  } catch (error) {
+    console.log("error", error);
+    res.status(500).send({
+      error: true,
+      msg: "something went wrong",
+    });
+  }
+});
+
 module.exports = { UserRouter };
