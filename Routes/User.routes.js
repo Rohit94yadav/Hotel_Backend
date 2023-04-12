@@ -122,7 +122,7 @@ const payload=req.body
   try {
   await UserModel.findByIdAndUpdate({_id:Id},payload)
     res.status(200).send({
-      msg: "Profile Updated"
+      msg: "Profile Updated",payload
     });
   } catch (error) {
     console.log("error", error);
