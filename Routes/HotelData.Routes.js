@@ -14,10 +14,10 @@ const { authenticateAdmin } = require("../middleware/authenticate.Admin");
 const { authenticateVendor } = require("../middleware/authenticateVendor");
 
 hotelDataRoutes.get("/allhotel", async (req, res) => {
-  try{
-    const abc = await HotelDataModel.find()
+  try {
+    const abc = await HotelDataModel.find();
     console.log(abc);
-    res.send({data:abc,total:abc.length});
+    res.send({ data: abc, total: abc.length });
   } catch (error) {
     res.status(404).send({ msg: "something went wrong" });
   }
@@ -31,8 +31,6 @@ hotelDataRoutes.get("/off", async (req, res) => {
   console.log(abc);
   res.send(abc);
 });
-
-
 
 hotelDataRoutes.get("/", authenticate, async (req, res) => {
   const sort = req.query.sort;
@@ -156,28 +154,68 @@ hotelDataRoutes.post("/add", authenticateAdmin, async (req, res) => {
   const decoded = jwt.verify(token, process.env.key);
   // console.log(decoded.AdminId)
   const data = await HotelModel.find({ _id: payload.hotelId });
+  const data1 = await HotelDataModel.findOne({ hotelId: payload.hotelId });
   const date = new Date();
 
   try {
-    const cart = await HotelDataModel.create({
-      hotelId: payload.hotelId,
-      name: data[0].name,
-      image_url: data[0].image_url,
-      email: data[0].email,
-      quantity: data[0].quantity,
-      phone: data[0].phone,
-      address: data[0].address,
-      city: data[0].city,
-      ownerName: data[0].ownerName,
-      contactName: data[0].contactName,
-      date: date,
-      alltypes: [],
-      AdminId: decoded.AdminId,
-      AgentId: data[0].AgentId,
-      vendorId: data[0].vendorId,
-    });
-    await cart.save()
-    return res.status(201).send(cart);
+    if (!data1) {
+      const cart = await HotelDataModel.create({
+        hotelId: payload.hotelId,
+        name: data[0].name,
+        image_url: data[0].image_url,
+        email: data[0].email,
+        quantity: data[0].quantity,
+        phone: data[0].phone,
+        address: data[0].address,
+        city: data[0].city,
+        ownerName: data[0].ownerName,
+        contactName: data[0].contactName,
+        date: date,
+        alltypes: [],
+        AdminId: decoded.AdminId,
+        AgentId: data[0].AgentId,
+        vendorId: payload.vendorId,
+      });
+      await cart.save();
+      return res.status(201).send(cart);
+    } else {
+      return res.status(201).send({ msg: "Hotel Already added" });
+    }
+  } catch (e) {
+    res.status(500).send(e.message);
+  }
+});
+
+hotelDataRoutes.post("/addrooms", authenticateVendor, async (req, res) => {
+  const payload = req.body;
+  console.log(payload)
+
+  const date = new Date();
+
+  try {
+    const data = await HotelDataModel.findOne({ vendorId: req.body.vendorId });
+    for (let i = 0; i < payload.alltypes.length; i++) {
+      data.alltypes.push({
+        type: payload.alltypes[i].type,
+        numberofitem: payload.alltypes[i].numberofitem,
+        price: payload.alltypes[i].price,
+        facilites: payload.alltypes[i].facilites,
+        availableitem: payload.alltypes[i].availableitem,
+        discountprice: payload.alltypes[i].discountprice,
+        description: payload.alltypes[i].description,
+        off: payload.alltypes[i].off,
+        img1: payload.alltypes[i].img1,
+        img2: payload.alltypes[i].img2,
+        img3: payload.alltypes[i].img3,
+        img4: payload.alltypes[i].img4,
+        img5: payload.alltypes[i].img5,
+        date:date
+      });
+      await data.save();
+    }
+
+    await data.save();
+    return res.status(201).send(data);
   } catch (e) {
     res.status(500).send(e.message);
   }
@@ -189,8 +227,6 @@ hotelDataRoutes.patch("/update/:id", authenticateVendor, async (req, res) => {
   const token = req.headers.authorization;
 
   const decoded = jwt.verify(token, process.env.key);
-  console.log(decoded.vendorId);
-
   try {
     await HotelDataModel.findByIdAndUpdate({ _id: Id }, payload, {
       vendorId: decoded.vendorId,

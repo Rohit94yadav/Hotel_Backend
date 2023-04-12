@@ -24,6 +24,12 @@ const hotelDataSchema = mongoose.Schema(
         discountprice:{ type: Number,default:0 },
         description:{type:String,default:"basic"},
         off:{ type: Number,default:0 },
+        img1:{type:String},
+        img2:{type:String},
+        img3:{type:String},
+        img4:{type:String},
+        img5:{type:String},
+        date:{type:String}
 
       }
     ],
