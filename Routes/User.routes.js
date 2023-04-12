@@ -78,6 +78,7 @@ UserRouter.post("/login", async (req, res) => {
                     username: user.name,
                     userId: user._id,
                     Email: user.email,
+                    phonne:user.phone,
                     error: false,
                   });
                 }
